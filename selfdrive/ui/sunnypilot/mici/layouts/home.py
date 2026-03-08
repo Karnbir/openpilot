@@ -10,8 +10,8 @@ class MiciHomeLayoutSP(MiciHomeLayout):
   def __init__(self):
     super().__init__()
 
-  def _render_bottom_status_bar(self):
-    super()._render_bottom_status_bar()
+  def _render(self, _):
+    super()._render(_)
 
     ITEM_SPACING = 18
     Y_CENTER = 28

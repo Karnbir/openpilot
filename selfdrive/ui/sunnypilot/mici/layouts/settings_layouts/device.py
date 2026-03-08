@@ -9,8 +9,8 @@ from openpilot.system.ui.lib.multilang import tr
 
 
 class DeviceLayoutMiciSP(DeviceLayoutMici):
-  def __init__(self, back_callback: Callable):
-    super().__init__(back_callback)
+  def __init__(self):
+    super().__init__()
 
     self._enable_offroad = BigCircleButton("../../sunnypilot/selfdrive/assets/icons_mici/always_offroad.png",
                                                       red=True, icon_size=(120, 120))
@@ -31,7 +31,7 @@ class DeviceLayoutMiciSP(DeviceLayoutMici):
 
   def _handle_always_offroad(self):
     if ui_state.engaged:
-      gui_app.set_modal_overlay(BigDialog(tr("disengage"),tr("\nto enable always offroad")))
+      gui_app.push_widget(BigDialog(tr("disengage"),tr("\nto enable always offroad")))
       return
 
     def _enable_always_offroad():
@@ -49,7 +49,7 @@ class DeviceLayoutMiciSP(DeviceLayoutMici):
     else:
       dlg = BigConfirmationDialogV2(tr("slide to enable always offroad"), "icons_mici/settings/device/lkas.png",
                                   red=True, confirm_callback=_enable_always_offroad)
-    gui_app.set_modal_overlay(dlg)
+    gui_app.push_widget(dlg)
 
   def _update_state(self):
     super()._update_state()
