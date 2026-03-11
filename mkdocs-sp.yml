@@ -35,8 +35,8 @@ theme:
   font:
     text: Open Sans
     code: Fira Code
-  logo: assets/sp_logo.svg
-  favicon: assets/sp_logo.svg
+  logo: assets/logo.png
+  favicon: assets/logo.png
   features:
     - content.code.copy
     - navigation.tabs
