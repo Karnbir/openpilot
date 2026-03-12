@@ -8,8 +8,8 @@ Manage Wi-Fi connections on your comma device.
 
 **Location**: `Settings -> Network`
 
-!!! device-support "Supported Devices"
-    :material-check: comma 3X/3 &nbsp; :material-check: sunnylink &nbsp; :material-check: comma four
+!!! info "Toggle & Device Availability"
+    Available and configurable on all devices (comma 3X/3, comma four, sunnylink).
 
 ---
 

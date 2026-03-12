@@ -8,8 +8,8 @@ Settings specific to Subaru vehicles. These appear in the Vehicle panel when a S
 
 **Location**: `Settings -> Vehicle`
 
-!!! device-support "Supported Devices"
-    :material-check: comma 3X/3 &nbsp; :material-check: sunnylink &nbsp; :material-close: comma four
+!!! info "Toggle & Device Availability"
+    Supported on all devices. comma four users must use sunnylink to change this setting.
 
 ---
 

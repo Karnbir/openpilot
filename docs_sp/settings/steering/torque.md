@@ -8,8 +8,8 @@ Advanced tuning parameters for torque-based lateral (steering) control. These se
 
 **Location**: `Settings -> Steering -> Customize Torque Params`
 
-!!! device-support "Supported Devices"
-    :material-check: comma 3X/3 &nbsp; :material-check: sunnylink &nbsp; :material-close: comma four
+!!! info "Toggle & Device Availability"
+    Supported on all devices. comma four users must use sunnylink to change this setting.
 
 !!! info "Prerequisite"
     **Enforce Torque Lateral Control** must be enabled in [Steering Settings](index.md) to access this sub-panel. Not available on vehicles with angle-based steering.

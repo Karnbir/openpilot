@@ -7,7 +7,7 @@ title: Settings
 Complete reference for every configurable option in sunnypilot. The panels below are listed in the same order they appear on your device's settings sidebar.
 
 !!! info "Not all settings appear on every device"
-    comma four users see a simplified settings screen. See [Platform Differences](platform-differences.md) for details on what is available on each device. All settings can be accessed through sunnylink regardless of hardware.
+    comma four users see a simplified settings screen. Most features still work on comma four -- you just configure the hidden ones through sunnylink. A few onroad visual features are not available on comma four at all. See [Platform Differences](platform-differences.md) for the full breakdown.
 
 | Panel | Description |
 |-------|-------------|

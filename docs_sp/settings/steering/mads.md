@@ -8,8 +8,8 @@ Fine-tune how the Modular Assistive Driving System (MADS) engages and disengages
 
 **Location**: `Settings -> Steering -> Customize MADS`
 
-!!! device-support "Supported Devices"
-    :material-check: comma 3X/3 &nbsp; :material-check: sunnylink &nbsp; :material-close: comma four
+!!! info "Toggle & Device Availability"
+    Supported on all devices. comma four users must use sunnylink to change this setting.
 
 !!! info "Prerequisite"
     The main **Modular Assistive Driving System (MADS)** toggle must be enabled in [Steering Settings](index.md) to access this sub-panel.

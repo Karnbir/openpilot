@@ -8,8 +8,8 @@ Configure automatic lane change behavior and blind spot monitoring integration.
 
 **Location**: `Settings -> Steering -> Customize Lane Change`
 
-!!! device-support "Supported Devices"
-    :material-check: comma 3X/3 &nbsp; :material-check: sunnylink &nbsp; :material-close: comma four
+!!! info "Toggle & Device Availability"
+    Supported on all devices. comma four users must use sunnylink to change this setting.
 
 ---
 
