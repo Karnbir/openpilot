@@ -75,5 +75,5 @@ The panel displays the following read-only information:
 ## Related Features
 
 - [OSM Maps](../features/osm-maps.md)
-- [Speed Limit Control](../features/speed-limit.md)
+- [Speed Limit Assist](../features/speed-limit.md)
 - [Smart Cruise Control — Map](../features/scc-m.md)

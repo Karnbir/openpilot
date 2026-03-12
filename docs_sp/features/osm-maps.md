@@ -6,7 +6,7 @@ title: OSM Maps
 
 ## What It Does
 
-Integrates OpenStreetMap (OSM) data to provide speed limit information, road geometry, and other map attributes. This data powers features like Speed Limit Control and Smart Cruise Control — Map.
+Integrates OpenStreetMap (OSM) data to provide speed limit information, road geometry, and other map attributes. This data powers features like Speed Limit Assist and Smart Cruise Control — Map.
 
 ## How It Works
 
@@ -32,7 +32,7 @@ Integrates OpenStreetMap (OSM) data to provide speed limit information, road geo
 
 ## Features That Use OSM Data
 
-- **[Speed Limit Control](speed-limit.md)** — Reads speed limits from map data
+- **[Speed Limit Assist](speed-limit.md)** — Reads speed limits from map data
 - **[Smart Cruise Control — Map](scc-m.md)** — Uses road geometry for proactive speed adjustment
 
 ## Managing Map Data

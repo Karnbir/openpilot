@@ -46,8 +46,8 @@ See [MADS Settings](../mads.md) for details on these settings.
 
 ---
 
-## Speed Limit Control Restrictions
+## Speed Limit Assist Restrictions
 
-On **release branches**, the Speed Limit Assist mode is disabled for Tesla vehicles. Info and Warning modes remain available.
+On **release branches**, Speed Limit Assist mode is disabled for Tesla vehicles. Info and Warning modes remain available.
 
 See [Speed Limit Settings](../speed-limit.md) for details.

@@ -11,7 +11,7 @@ sunnypilot is an open-source driver assistance system that enhances your car's e
 - **Adaptive Cruise Control** — Automatically adjusts speed to maintain distance from the car ahead
 - **Lane Centering** — Keeps your car centered in the lane on highways and well-marked roads
 - **Modular Assistive Driving System (MADS)** — Decouple lateral and longitudinal controls for flexible driving
-- **Speed Limit Control** — Automatically adjust speed based on map and sign data
+- **Speed Limit Assist** — Automatically adjust speed based on map and sign data
 - **Neural Network Lateral Control** — AI-based steering for smoother lane keeping
 
 ## How It Works

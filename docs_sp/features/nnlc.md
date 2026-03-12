@@ -12,10 +12,17 @@ NNLC replaces the traditional PID or torque-based steering controller with a neu
 
 Instead of using fixed mathematical formulas (PID controller), NNLC uses a machine learning model to calculate steering commands. The neural network has been trained on real-world driving data and can handle a wider variety of driving scenarios with smoother output.
 
+!!! note "Evolution from NNFF"
+    NNLC evolved from **Neural Network FeedForward (NNFF)**, an earlier approach that used a neural network as a feedforward component alongside traditional controllers. NNLC builds on this foundation by giving the neural network full lateral control authority, resulting in improved steering smoothness and adaptability.
+
+!!! info "Vehicle-Specific Training Data"
+    The neural network models are trained on real driving data collected from specific vehicles. Because each vehicle has unique steering characteristics, a dedicated model must be trained for each supported make/model. **Not all vehicles have trained models available** — if no model exists for your vehicle, the NNLC toggle will not appear in settings.
+
 ## Requirements
 
 !!! info "Requirements"
     - Vehicle must not use angle-based steering (`steerControlType` must not be `angle`)
+    - A trained NNLC model must be available for your specific vehicle
     - Mutually exclusive with [Torque Control](torque-control.md) — only one can be active at a time
     - Device must be offroad to enable/disable
 
@@ -24,7 +31,7 @@ Instead of using fixed mathematical formulas (PID controller), NNLC uses a machi
 **Settings** → **sunnypilot** → **Steering** → **Neural Network Lateral Control**
 
 !!! tip
-    Not all vehicles have NNLC models available. If the toggle does not appear, your vehicle may use angle-based steering which is not compatible with NNLC.
+    Not all vehicles have NNLC models available. If the toggle does not appear, your vehicle may use angle-based steering which is not compatible with NNLC, or a trained model may not yet exist for your vehicle.
 
 ## NNLC vs. Torque Control
 

@@ -6,7 +6,7 @@ title: Speed Limit Settings
 
 Configure how sunnypilot responds to detected speed limits from maps, signs, and navigation data.
 
-**Location:** Settings → sunnypilot → Cruise Control → Speed Limit Control
+**Location:** Settings → sunnypilot → Cruise Control → Speed Limit Assist
 
 ---
 
@@ -80,5 +80,5 @@ Speed Limit Policy is a sub-panel that controls the priority of speed limit data
 
 ## Related Features
 
-- [Speed Limit Control](../features/speed-limit.md)
+- [Speed Limit Assist](../features/speed-limit.md)
 - [OSM Maps](../features/osm-maps.md)

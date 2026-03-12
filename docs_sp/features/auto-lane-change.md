@@ -11,17 +11,21 @@ Automatically executes lane changes when you activate the turn signal. You can c
 ## How It Works
 
 1. Activate your turn signal in the desired direction
-2. Depending on your setting:
+2. The system verifies that clear lane markings are detected by the vision system in the target lane — a lane change will not execute without visible lane lines
+3. The driver monitoring system checks that the driver is attentive before proceeding
+4. Depending on your setting:
     - **Nudge:** Give a light steering nudge to confirm the lane change
     - **Nudgeless:** The lane change begins immediately
     - **Timed (0.5s–3s):** The lane change begins after the configured delay
-3. If BSM Delay is enabled and a vehicle is detected in your blind spot, the lane change waits until the path is clear
+5. If BSM Delay is enabled and a vehicle is detected in your blind spot, the lane change waits until the path is clear
 
 ## Requirements
 
 !!! info "Requirements"
     - Lateral control must be active (sunnypilot must be engaged)
     - Vehicle must be traveling above a minimum speed threshold
+    - Clear lane markings must be visible to the vision system
+    - Driver must be attentive (monitored by the driver monitoring system)
 
 ## How to Enable
 

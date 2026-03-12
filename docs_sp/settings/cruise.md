@@ -18,7 +18,7 @@ Settings for adaptive cruise control behavior, including intelligent button mana
 | **Type** | Toggle (On/Off) |
 | **Default** | Off |
 
-Allows sunnypilot to dynamically manage cruise speed by intercepting button presses on the steering wheel. When enabled, speed adjustments are handled intelligently to support features like Speed Limit Control.
+Allows sunnypilot to dynamically manage cruise speed by intercepting button presses on the steering wheel. When enabled, speed adjustments are handled intelligently to support features like Speed Limit Assist.
 
 !!! info "Requirements"
     - Vehicle must support ICBM (shown only when `intelligentCruiseButtonManagementAvailable` is true in car parameters)
@@ -120,9 +120,9 @@ Automatically switches between openpilot and experimental mode based on driving 
 
 ---
 
-## Speed Limit Control
+## Speed Limit Assist
 
-Speed Limit Control settings are located in a sub-panel within Cruise Control. See the dedicated [Speed Limit Settings](speed-limit.md) page for full details.
+Speed Limit Assist settings are located in a sub-panel within Cruise Control. See the dedicated [Speed Limit Settings](speed-limit.md) page for full details.
 
 ---
 

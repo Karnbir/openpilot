@@ -101,7 +101,8 @@ nav:
           - Smart Cruise Control - Map: features/scc-m.md
           - Custom ACC Increments: features/custom-acc-increments.md
           - Dynamic Experimental Control: features/dynamic-experimental-control.md
-          - Speed Limit Control: features/speed-limit.md
+          - Speed Limit Assist: features/speed-limit.md
+          - Alpha Longitudinal: features/alpha-longitudinal.md
       - Steering:
           - Modular Assistive Driving System: features/mads.md
           - Neural Network Lateral Control: features/nnlc.md
@@ -136,9 +137,15 @@ nav:
       - Workflow: community/workflow.md
       - Reporting a Bug: community/reporting-a-bug.md
       - Discord Community: https://discord.sunnypilot.ai
+  - How-To Guides:
+      - Share a Route: how-to/share-a-route.md
+      - Preserve Local File Changes: how-to/preserve-local-changes.md
   - Safety:
       - Safety Information: safety/safety.md
+      - Driver Responsibility & L2 ADAS: safety/driver-responsibility.md
       - Prohibited Modifications: safety/prohibited-modifications.md
+  - Technical Reference:
+      - Hyundai Longitudinal Tuning: technical/hyundai-longitudinal-tuning.md
   - References:
       - Recommended Branches: references/recommended-branches.md
       - Branch Definitions: references/branch-definitions.md

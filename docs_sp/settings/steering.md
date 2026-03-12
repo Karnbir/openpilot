@@ -10,7 +10,7 @@ Configure lateral (steering) control behavior including MADS, lane changes, and 
 
 ---
 
-## M.A.D.S. (Modular Assistive Driving System)
+## MADS (Modular Assistive Driving System)
 
 | Property | Value |
 |----------|-------|
