@@ -54,39 +54,34 @@ nav = [
   ]},
   { "Settings" = [
     "settings/index.md",
-    { "Cruise Control" = [
-      { "Cruise Control" = "settings/cruise.md" },
-      { "Speed Limit" = "settings/speed-limit.md" },
-    ]},
+    { "Device" = "settings/device.md" },
+    { "Network" = "settings/network.md" },
+    { "sunnylink" = "settings/sunnylink.md" },
+    { "Toggles" = "settings/toggles.md" },
+    { "Software" = "settings/software.md" },
+    { "Models" = "settings/models.md" },
     { "Steering" = [
       { "Steering" = "settings/steering.md" },
       { "MADS" = "settings/mads.md" },
       { "Lane Change" = "settings/lane-change.md" },
       { "Torque" = "settings/torque.md" },
     ]},
-    { "Display & Visuals" = [
-      { "Display" = "settings/display.md" },
-      { "Visuals & HUD" = "settings/visuals.md" },
+    { "Cruise" = [
+      { "Cruise" = "settings/cruise.md" },
+      { "Speed Limit" = "settings/speed-limit.md" },
     ]},
-    { "Models & AI" = [
-      { "Models & AI" = "settings/models.md" },
-    ]},
-    { "Device & System" = [
-      { "Device" = "settings/device.md" },
-      { "Software" = "settings/software.md" },
-      { "Developer" = "settings/developer.md" },
-    ]},
-    { "Connected Services" = [
-      { "sunnylink" = "settings/sunnylink.md" },
-      { "Trips" = "settings/trips.md" },
-      { "OSM Maps" = "settings/osm.md" },
-    ]},
-    { "Vehicle-Specific" = [
+    { "Visuals" = "settings/visuals.md" },
+    { "Display" = "settings/display.md" },
+    { "OSM" = "settings/osm.md" },
+    { "Trips" = "settings/trips.md" },
+    { "Vehicle" = [
       { "Tesla" = "settings/vehicle/tesla.md" },
       { "Toyota" = "settings/vehicle/toyota.md" },
       { "Hyundai" = "settings/vehicle/hyundai.md" },
       { "Subaru" = "settings/vehicle/subaru.md" },
     ]},
+    { "Firehose" = "settings/firehose.md" },
+    { "Developer" = "settings/developer.md" },
   ]},
   { "How-To Guides" = [
     "how-to/index.md",
@@ -123,8 +118,6 @@ features = [
   "content.tabs.link",
   "navigation.tabs",
   "navigation.tabs.sticky",
-  "navigation.sections",
-  "navigation.expand",
   "navigation.indexes",
   "navigation.path",
   "navigation.instant",
@@ -148,16 +141,16 @@ toggle.name = "Switch to light mode"
 [[project.theme.palette]]
 media = "(prefers-color-scheme: light)"
 scheme = "default"
-primary = "deep purple"
-accent = "teal"
+primary = "#594AE2"
+accent = "#594AE2"
 toggle.icon = "material/brightness-7"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: dark)"
 scheme = "slate"
-primary = "deep purple"
-accent = "teal"
+primary = "#594AE2"
+accent = "#594AE2"
 toggle.icon = "material/brightness-4"
 toggle.name = "Switch to system preference"
 

@@ -4,58 +4,22 @@ title: Settings
 
 # Settings
 
-Complete reference for every configurable option in sunnypilot. Each section corresponds to a settings panel on your device.
+Complete reference for every configurable option in sunnypilot. The panels below are listed in the same order they appear on your device's settings sidebar.
 
-## Cruise Control
-
-| Section | Description |
-|---------|-------------|
-| [Cruise Control](cruise.md) | ACC behavior, following distance, and cruise button logic |
-| [Speed Limit](speed-limit.md) | Speed limit source, offset, and assist configuration |
-
-## Steering
-
-| Section | Description |
-|---------|-------------|
-| [Steering](steering.md) | Lateral control mode and steering parameters |
-| [MADS](mads.md) | Modular Assistive Driving System toggle and behavior |
-| [Lane Change](lane-change.md) | Automatic lane change settings and safety thresholds |
-| [Torque](torque.md) | Torque-based lateral control tuning |
-
-## Display & Visuals
-
-| Section | Description |
-|---------|-------------|
-| [Display](display.md) | Onroad display layout and elements |
-| [Visuals & HUD](visuals.md) | HUD overlays and visual customization |
-
-## Models & AI
-
-| Section | Description |
-|---------|-------------|
-| [Models & AI](models.md) | Driving model and AI configuration |
-
-## Device & System
-
-| Section | Description |
-|---------|-------------|
-| [Device](device.md) | Device-level settings (screen, storage, power) |
-| [Software](software.md) | Update channel and branch management |
-| [Developer](developer.md) | Developer and debug options |
-
-## Connected Services
-
-| Section | Description |
-|---------|-------------|
+| Panel | Description |
+|-------|-------------|
+| [Device](device.md) | Device-level settings (screen, storage, power, calibration) |
+| [Network](network.md) | Wi-Fi connection management |
 | [sunnylink](sunnylink.md) | Cloud backend integration, backup/restore, sponsor status |
+| [Toggles](toggles.md) | Core openpilot toggles (enable, experimental mode, LDW, etc.) |
+| [Software](software.md) | Update channel and branch management |
+| [Models](models.md) | Driving model selection, download, and AI configuration |
+| [Steering](steering.md) | Lateral control mode, MADS, lane change, and torque tuning |
+| [Cruise](cruise.md) | ACC behavior, following distance, cruise button logic, speed limit assist |
+| [Visuals](visuals.md) | HUD overlays and visual customization |
+| [Display](display.md) | Onroad display brightness and layout |
+| [OSM](osm.md) | OpenStreetMap data and map features |
 | [Trips](trips.md) | Drive statistics and trip history |
-| [OSM Maps](osm.md) | OpenStreetMap data and map features |
-
-## Vehicle-Specific
-
-| Section | Description |
-|---------|-------------|
-| [Tesla](vehicle/tesla.md) | Tesla-specific overrides |
-| [Toyota](vehicle/toyota.md) | Toyota-specific overrides |
-| [Hyundai](vehicle/hyundai.md) | Hyundai-specific overrides |
-| [Subaru](vehicle/subaru.md) | Subaru-specific overrides |
+| [Vehicle](vehicle/tesla.md) | Vehicle-specific overrides (Tesla, Toyota, Hyundai, Subaru) |
+| [Firehose](firehose.md) | Training data upload for comma's driving models |
+| [Developer](developer.md) | Developer and debug options |
