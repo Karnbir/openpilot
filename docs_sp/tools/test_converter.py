@@ -353,11 +353,13 @@ def test_internal_link_relative():
     input_text = "See [ICBM](../features/cruise/icbm.md) for details."
     result = resolve_internal_links(
         input_text,
-        file_path="docs_sp/settings/cruise/speed-limit.md",
-        docs_base_url="https://docs.sunnypilot.ai",
+        file_path="settings/cruise/speed-limit.md",
     )
-    assert "https://docs.sunnypilot.ai/" in result, f"FAIL internal_link:\n{result!r}"
-    assert ".md" not in result.split("](")[1], f"FAIL internal_link still has .md:\n{result!r}"
+    assert "/search?q=" in result, f"FAIL internal_link missing search URL:\n{result!r}"
+    assert "docs-sync-id" in result, f"FAIL internal_link missing sync-id:\n{result!r}"
+    assert "features%2Fcruise%2Ficbm.md" in result or "features/cruise/icbm.md" in result, (
+        f"FAIL internal_link wrong path:\n{result!r}"
+    )
     print("  PASS: internal_link_relative")
 
 
@@ -365,11 +367,12 @@ def test_internal_link_with_anchor():
     input_text = "See [section](./safety.md#driver-responsibility)."
     result = resolve_internal_links(
         input_text,
-        file_path="docs_sp/safety/index.md",
-        docs_base_url="https://docs.sunnypilot.ai",
+        file_path="safety/index.md",
     )
-    assert "#driver-responsibility" in result, f"FAIL anchor preserved:\n{result!r}"
-    assert ".md" not in result.split("](")[1].split("#")[0], f"FAIL link has .md:\n{result!r}"
+    # Anchors are stripped — Discourse search cannot target sections
+    assert "#driver-responsibility" not in result, f"FAIL anchor should be stripped:\n{result!r}"
+    assert "docs-sync-id" in result, f"FAIL missing sync-id:\n{result!r}"
+    assert "safety" in result, f"FAIL wrong path:\n{result!r}"
     print("  PASS: internal_link_with_anchor")
 
 
@@ -377,8 +380,7 @@ def test_external_link_untouched():
     input_text = "Visit [GitHub](https://github.com/sunnypilot/sunnypilot)."
     result = resolve_internal_links(
         input_text,
-        file_path="docs_sp/index.md",
-        docs_base_url="https://docs.sunnypilot.ai",
+        file_path="index.md",
     )
     assert result == input_text, f"FAIL external_link:\n{result!r}"
     print("  PASS: external_link_untouched")
@@ -425,16 +427,16 @@ See [safety info](../safety/safety.md) for more.
 """
     result = convert(
         input_text,
-        file_path="docs_sp/features/index.md",
-        docs_base_url="https://docs.sunnypilot.ai",
+        file_path="features/index.md",
     )
     # Front matter stripped
     assert "---\ntitle:" not in result, f"FAIL front matter not stripped:\n{result!r}"
     # Admonition converted
     assert "> [!WARNING] Important" in result, f"FAIL admonition:\n{result!r}"
     assert "> Pay attention to the road." in result, f"FAIL admonition content:\n{result!r}"
-    # Link resolved
-    assert ".md" not in result.split("](")[1].split(")")[0], f"FAIL link:\n{result!r}"
+    # Link resolved to Discourse search
+    assert "/search?q=" in result, f"FAIL link not converted to search:\n{result!r}"
+    assert "docs-sync-id" in result, f"FAIL link missing sync-id:\n{result!r}"
     # Emoji converted
     assert ":material-check:" not in result, f"FAIL emoji:\n{result!r}"
     assert "Y Feature supported" in result, f"FAIL emoji replacement:\n{result!r}"

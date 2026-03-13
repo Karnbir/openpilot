@@ -34,21 +34,21 @@ jobs:
           DISCOURSE_CATEGORY_MAP: '{"getting-started": 133}'
         run: |
           uv run --python 3.12 python -c "
-          import sys
+          import os, sys
           sys.path.insert(0, 'docs_sp/tools')
           from pathlib import Path
           from converter import convert
           from discourse_client import DiscourseClient, DiscourseConfig
 
-          DOCS_BASE_URL = 'https://docs.sunnypilot.ai'
           DOC_PATH = 'getting-started/what-is-sunnypilot.md'
+          GITHUB_BRANCH = os.environ.get('GITHUB_REF_NAME', 'master')
 
           raw = (Path('docs_sp') / DOC_PATH).read_text()
-          body = convert(raw, file_path=DOC_PATH, docs_base_url=DOCS_BASE_URL)
+          body = convert(raw, file_path=DOC_PATH)
 
-          # Append sync metadata
-          docs_url = f'{DOCS_BASE_URL}/{DOC_PATH.replace(\".md\", \"/\")}'
-          body = body.rstrip('\n') + f'\n\n---\n:link: [View on docs site]({docs_url})\n\n<!-- docs-sync-id: {DOC_PATH} -->\n'
+          # Append sync footer
+          gh_url = f'https://github.com/sunnypilot/sunnypilot/blob/{GITHUB_BRANCH}/docs_sp/{DOC_PATH}'
+          body = body.rstrip('\n') + f'\n\n---\n<small>This document is version-controlled. Suggest changes [on GitHub]({gh_url}).</small>\n\n<!-- docs-sync-id: {DOC_PATH} -->\n'
 
           # Extract title from front matter or first heading
           title = None
@@ -67,12 +67,7 @@ jobs:
 
           config = DiscourseConfig.from_env()
           client = DiscourseClient(config)
-
-          def category_id_for(path: str) -> int:
-            top_level = path.split('/')[0]
-            return config.category_mapping.get(top_level, config.category_mapping.get('documentation', 114))
-
-          category_id = category_id_for(DOC_PATH)
+          category_id = config.category_id_for(DOC_PATH)
           print(f'Category ID: {category_id}')
 
           existing = client.find_topic_by_sync_id(DOC_PATH)
