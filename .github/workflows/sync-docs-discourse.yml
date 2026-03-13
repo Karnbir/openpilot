@@ -32,7 +32,7 @@ jobs:
           DISCOURSE_API_KEY: ${{ secrets.DISCOURSE_API_KEY }}
           DISCOURSE_API_USER: ${{ secrets.DISCOURSE_API_USER }}
         run: |
-          uv run --python 3.12 -c "
+          uv run --python 3.12 python -c "
           import sys
           sys.path.insert(0, 'docs_sp/tools')
           from pathlib import Path
