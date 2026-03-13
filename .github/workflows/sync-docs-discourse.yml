@@ -48,7 +48,7 @@ jobs:
 
           # Append sync footer
           gh_url = f'https://github.com/sunnypilot/sunnypilot/blob/{GITHUB_BRANCH}/docs_sp/{DOC_PATH}'
-          body = body.rstrip('\n') + f'\n\n---\n<small>This document is version-controlled. Suggest changes [on GitHub]({gh_url}).</small>\n\n<!-- docs-sync-id: {DOC_PATH} -->\n'
+          body = body.rstrip('\n') + f'\n\n---\n<small>This document is version-controlled. Suggest changes [on GitHub]({gh_url}).</small>\n<small>docs-sync-id: {DOC_PATH}</small>\n'
 
           # Extract title from front matter or first heading
           title = None

@@ -98,9 +98,11 @@ class DiscourseClient:
     # ----- Public API -----
 
     def find_topic_by_sync_id(self, sync_id: str) -> dict[str, Any] | None:
-        """Find an existing topic by its embedded sync ID comment.
+        """Find an existing topic by its embedded sync ID marker.
 
-        Searches for topics containing <!-- docs-sync-id: {sync_id} -->.
+        Searches for topics containing the visible sync ID text
+        ``docs-sync-id: {sync_id}``.  The marker must be visible (not an
+        HTML comment) so that Discourse indexes it.
 
         Args:
             sync_id: The doc path used as sync identifier.
@@ -108,7 +110,7 @@ class DiscourseClient:
         Returns:
             Topic dict with at least 'id' key, or None if not found.
         """
-        query = f"<!-- docs-sync-id: {sync_id} -->"
+        query = f'"docs-sync-id: {sync_id}"'
         encoded = urllib.parse.urlencode({"q": query})
         data = self._get(f"/search.json?{encoded}")
         if data is None:
