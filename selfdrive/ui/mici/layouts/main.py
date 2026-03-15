@@ -68,7 +68,7 @@ class MiciMainLayout(Scroller):
     self._onroad_layout.set_click_callback(lambda: self._scroll_to(self._home_layout))
     device.add_interactive_timeout_callback(self._on_interactive_timeout)
 
-  def _is_on_side_panel(self) -> bool: # TODO: remove sunny not gonna like it ?
+  def _is_on_side_panel(self) -> bool: # TODO: remove sunny not going like it ?
     onroad_x = self._onroad_layout.rect.x
     current_scroll = self._scroller.scroll_panel.get_offset()
     return abs(current_scroll - onroad_x) > self._rect.width / 2
