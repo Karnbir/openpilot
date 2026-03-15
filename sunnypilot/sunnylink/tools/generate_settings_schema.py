@@ -31,8 +31,8 @@ from datetime import datetime, UTC
 
 from openpilot.sunnypilot.sunnylink.capabilities import CAPABILITY_FIELDS
 
-METADATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "params_metadata.json")
 SCHEMA_VERSION = "1.0"
+METADATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "params_metadata.json")
 
 # ---------------------------------------------------------------------------
 # Rule builders
@@ -150,7 +150,6 @@ def _steering_panel() -> Panel:
                    SchemaItem(key="BlinkerLateralReengageDelay", widget="option",
                               visibility=[param_eq("BlinkerPauseLateralControl", True)]),
                  ]),
-      SchemaItem(key="LaneTurnDesire", widget="toggle"),
       SchemaItem(key="EnforceTorqueControl", widget="toggle",
                  visibility=[not_rule(cap("steer_control_type", "angle"))],
                  enablement=[offroad_only(), cap("torque_allowed", True),
@@ -285,6 +284,7 @@ def _visuals_panel() -> Panel:
       SchemaItem(key="RocketFuel", widget="toggle"),
       SchemaItem(key="ChevronInfo", widget="multiple_button",
                  enablement=[cap("has_longitudinal_control", True)]),
+      SchemaItem(key="DevUIInfo", widget="multiple_button"),
       SchemaItem(key="TrueVEgoUI", widget="toggle"),
       SchemaItem(key="HideVEgoUI", widget="toggle"),
       SchemaItem(key="GreenLightAlert", widget="toggle"),
@@ -313,18 +313,19 @@ def _device_panel() -> Panel:
 
 
 def _software_panel() -> Panel:
+  """software.py: DisableUpdates only."""
   return Panel(
     id="software", label="Software", icon="software", order=6,
     items=[
       SchemaItem(key="DisableUpdates", widget="toggle",
                  enablement=[offroad_only()],
                  visibility=[param_eq("ShowAdvancedControls", True)]),
-      SchemaItem(key="ShowAdvancedControls", widget="toggle"),
     ],
   )
 
 
 def _sunnylink_panel() -> Panel:
+  """sunnylink.py: SunnylinkEnabled, EnableSunnylinkUploader."""
   return Panel(
     id="sunnylink", label="sunnylink", icon="sunnylink", order=7,
     remote_configurable=False,
@@ -338,55 +339,51 @@ def _sunnylink_panel() -> Panel:
 
 
 def _developer_panel() -> Panel:
+  """developer.py: ShowAdvancedControls, EnableGithubRunner, EnableCopyparty, QuickBootToggle."""
   return Panel(
     id="developer", label="Developer", icon="developer", order=8,
     items=[
-      SchemaItem(key="ShowDebugInfo", widget="toggle"),
-      SchemaItem(key="QuickBootToggle", widget="toggle",
-                 visibility=[param_eq("ShowAdvancedControls", True)],
-                 enablement=[param_eq("DisableUpdates", True)]),
-      SchemaItem(key="EnableCopyparty", widget="toggle",
-                 visibility=[param_eq("ShowAdvancedControls", True)]),
+      SchemaItem(key="ShowAdvancedControls", widget="toggle"),
       SchemaItem(key="EnableGithubRunner", widget="toggle",
                  visibility=[all_of(
                    param_eq("ShowAdvancedControls", True),
                    not_rule(cap("is_release", True)),
                  )]),
-      SchemaItem(key="AdbEnabled", widget="toggle",
+      SchemaItem(key="EnableCopyparty", widget="toggle",
                  visibility=[param_eq("ShowAdvancedControls", True)]),
-      SchemaItem(key="SshEnabled", widget="toggle",
-                 visibility=[param_eq("ShowAdvancedControls", True)]),
-      SchemaItem(key="AlphaLongitudinalEnabled", widget="toggle",
-                 visibility=[cap("alpha_long_available", True)],
-                 enablement=[offroad_only()]),
-      SchemaItem(key="PlanplusControl", widget="option",
-                 visibility=[param_eq("ShowAdvancedControls", True)]),
+      SchemaItem(key="QuickBootToggle", widget="toggle",
+                 visibility=[all_of(
+                   param_eq("ShowAdvancedControls", True),
+                   not_rule(cap("is_release", True)),
+                   not_rule(cap("is_development", True)),
+                 )],
+                 enablement=[param_eq("DisableUpdates", True)]),
     ],
   )
 
 
 def _models_panel() -> Panel:
-  """Models panel — not remote-configurable (dedicated UI), but includes model-adjacent params.
+  """models.py: CameraOffset, LagdToggle, LagdToggleDelay, LaneTurnDesire, LaneTurnValue.
 
-  Note: LaneTurnDesire and NeuralNetworkLateralControl are defined in _steering_panel().
-  They are NOT duplicated here to avoid the frontend rendering two controls for the same param.
+  Not remote-configurable (dedicated frontend UI for model selection).
   """
   return Panel(
     id="models", label="Models", icon="models", order=9,
     remote_configurable=False,
     items=[
-      SchemaItem(key="CameraOffset", widget="option"),
+      SchemaItem(key="LaneTurnDesire", widget="toggle"),
+      SchemaItem(key="LaneTurnValue", widget="option",
+                 visibility=[all_of(
+                   param_eq("LaneTurnDesire", True),
+                   param_eq("ShowAdvancedControls", True),
+                 )]),
       SchemaItem(key="LagdToggle", widget="toggle"),
       SchemaItem(key="LagdToggleDelay", widget="option",
                  visibility=[all_of(
                    not_rule(param_eq("LagdToggle", True)),
                    param_eq("ShowAdvancedControls", True),
                  )]),
-      SchemaItem(key="LaneTurnValue", widget="option",
-                 visibility=[all_of(
-                   param_eq("LaneTurnDesire", True),
-                   param_eq("ShowAdvancedControls", True),
-                 )]),
+      SchemaItem(key="CameraOffset", widget="option"),
     ],
   )
 
@@ -438,7 +435,11 @@ def _vehicle_settings() -> dict[str, list[dict]]:
 
 
 # ---------------------------------------------------------------------------
-# Metadata merging
+# Metadata loading from params_metadata.json
+#
+# Titles, descriptions, options, and numeric constraints live in
+# params_metadata.json — a JSON file alongside this module.
+# The generator reads it at runtime and merges into schema items.
 # ---------------------------------------------------------------------------
 
 def _load_metadata() -> dict:
