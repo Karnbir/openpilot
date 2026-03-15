@@ -3,7 +3,6 @@ import cereal.messaging as messaging
 from openpilot.selfdrive.ui.mici.layouts.home import MiciHomeLayout
 from openpilot.selfdrive.ui.mici.layouts.settings.settings import SettingsLayout
 from openpilot.selfdrive.ui.mici.layouts.offroad_alerts import MiciOffroadAlerts
-from openpilot.selfdrive.ui.mici.layouts.mapd_panel import MapdInfoPanel
 from openpilot.selfdrive.ui.mici.onroad.augmented_road_view import AugmentedRoadView
 from openpilot.selfdrive.ui.ui_state import device, ui_state
 from openpilot.selfdrive.ui.mici.layouts.onboarding import OnboardingWindow
@@ -13,6 +12,7 @@ from openpilot.system.ui.lib.application import gui_app
 
 if gui_app.sunnypilot_ui():
   from openpilot.selfdrive.ui.sunnypilot.mici.layouts.settings import SettingsLayoutSP as SettingsLayout
+  from openpilot.selfdrive.ui.sunnypilot.mici.layouts.onroad import OnroadViewContainerSP as AugmentedRoadView
 
 
 ONROAD_DELAY = 2.5  # seconds
@@ -34,17 +34,15 @@ class MiciMainLayout(Scroller):
     self._alerts_layout = MiciOffroadAlerts()
     self._settings_layout = SettingsLayout()
     self._onroad_layout = AugmentedRoadView(bookmark_callback=self._on_bookmark_clicked)
-    self._mapd_panel = MapdInfoPanel()
 
     # Initialize widget rects
-    for widget in (self._home_layout, self._settings_layout, self._alerts_layout, self._onroad_layout,self._mapd_panel):
+    for widget in (self._home_layout, self._settings_layout, self._alerts_layout, self._onroad_layout):
       # TODO: set parent rect and use it if never passed rect from render (like in Scroller)
       widget.set_rect(rl.Rectangle(0, 0, gui_app.width, gui_app.height))
 
     self._scroller.add_widgets([
       self._alerts_layout,
       self._home_layout,
-      self._mapd_panel,
       self._onroad_layout,
     ])
     self._scroller.set_reset_scroll_at_show(False)
