@@ -104,13 +104,13 @@ class MapdInfoPanel(Widget):
       unit = tr("km/h") if ui_state.is_metric else tr("MPH")
       display_speed = self.current_speed
 
-    rl.draw_text_ex(self._font_semi_bold, unit, rl.Vector2(left_x, mid_y - 95), 38, 0, COLORS.grey)
-
     speed_val = str(round(display_speed))
     if self.speed_limit_valid and display_speed > self.speed_limit:
       speed_color = COLORS.red
     else:
       speed_color = COLORS.white
+
+    rl.draw_text_ex(self._font_semi_bold, unit, rl.Vector2(left_x, mid_y - 95), 38, 0, COLORS.grey)
     rl.draw_text_ex(self._font_bold, speed_val, rl.Vector2(left_x, mid_y - 60), 110, 0, speed_color)
 
     sign_width = 135 if ui_state.is_metric else 135
@@ -176,7 +176,7 @@ class MapdInfoPanel(Widget):
 
     # SCC
     speed_size = measure_text_cached(self._font_bold, speed_val, 110)
-    scc_x = left_x + speed_size.x + 14
+    scc_x = left_x + speed_size.x + 30
     scc_y = mid_y - 50
     self._draw_scc_icons(scc_x, scc_y)
 
@@ -195,21 +195,21 @@ class MapdInfoPanel(Widget):
       return
     scc = sm["longitudinalPlanSP"].smartCruiseControl
 
-    box_w, box_h = 56, 36
+    box_w, box_h = 100, 36
     gap = 6
     drawn = 0
 
-    for label, active in [("V", scc.vision.active), ("M", scc.map.active)]:
+    for label, active in [("SCC-V", scc.vision.active), ("SCC-M", scc.map.active)]:
       if not active:
         continue
       bx = x
       by = y + drawn * (box_h + gap)
       rl.draw_rectangle_rounded(rl.Rectangle(bx, by, box_w, box_h), 0.3, 10, COLORS.green)
-      self._draw_text_centered(self._font_bold, label, 24, rl.Vector2(bx + box_w / 2, by + box_h / 2), COLORS.black)
+      self._draw_text_centered(self._font_bold, label, 20, rl.Vector2(bx + box_w / 2, by + box_h / 2), COLORS.black)
       drawn += 1
 
   def _draw_speed_limit_sign(self, x: float, y: float, sign_width: float, sign_height: float) -> None:
-    speed_str = str(round(self.speed_limit)) if self.speed_limit_valid else "--"
+    speed_str = str(round(self.speed_limit)) if self.speed_limit_valid and self.speed_limit > 0 else "--"
     speed_color = COLORS.black if not self.speed_limit_valid or self.current_speed <= self.speed_limit else COLORS.red
 
     if ui_state.is_metric:

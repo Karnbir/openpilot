@@ -97,6 +97,7 @@ class MiciMainLayout(Scroller):
       # onroad: after delay, pop nav stack and scroll to onroad
       # offroad: immediately scroll to home, but don't pop nav stack (can stay in settings)
       if ui_state.started:
+        self._scroll_to(self._onroad_layout)
         self._onroad_time_delay = rl.get_time()
       else:
         self._scroll_to(self._home_layout)
