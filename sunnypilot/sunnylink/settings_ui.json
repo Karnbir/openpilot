@@ -1134,99 +1134,113 @@
     }
   ],
   "vehicle_settings": {
-    "hyundai": [
-      {
-        "key": "HyundaiLongitudinalTuning",
-        "widget": "multiple_button",
-        "visibility": [
-          {
-            "type": "capability",
-            "field": "alpha_long_available",
-            "equals": true
-          }
-        ],
-        "enablement": [
-          {
-            "type": "offroad_only"
-          },
-          {
-            "type": "capability",
-            "field": "has_longitudinal_control",
-            "equals": true
-          }
-        ]
-      }
-    ],
-    "toyota": [
-      {
-        "key": "ToyotaEnforceStockLongitudinal",
-        "widget": "toggle",
-        "enablement": [
-          {
-            "type": "offroad_only"
-          }
-        ]
-      },
-      {
-        "key": "ToyotaStopAndGoHack",
-        "widget": "toggle",
-        "enablement": [
-          {
-            "type": "offroad_only"
-          },
-          {
-            "type": "capability",
-            "field": "has_longitudinal_control",
-            "equals": true
-          },
-          {
-            "type": "param",
-            "key": "ToyotaEnforceStockLongitudinal",
-            "equals": false
-          }
-        ]
-      }
-    ],
-    "tesla": [
-      {
-        "key": "TeslaCoopSteering",
-        "widget": "toggle",
-        "enablement": [
-          {
-            "type": "offroad_only"
-          }
-        ]
-      }
-    ],
-    "subaru": [
-      {
-        "key": "SubaruStopAndGo",
-        "widget": "toggle",
-        "enablement": [
-          {
-            "type": "offroad_only"
-          },
-          {
-            "type": "capability",
-            "field": "has_stop_and_go",
-            "equals": true
-          }
-        ]
-      },
-      {
-        "key": "SubaruStopAndGoManualParkingBrake",
-        "widget": "toggle",
-        "enablement": [
-          {
-            "type": "offroad_only"
-          },
-          {
-            "type": "capability",
-            "field": "has_stop_and_go",
-            "equals": true
-          }
-        ]
-      }
-    ]
+    "hyundai": {
+      "title": "Hyundai, Kia, Genesis Settings",
+      "description": "Brand-specific settings for Hyundai, Kia, and Genesis vehicles",
+      "items": [
+        {
+          "key": "HyundaiLongitudinalTuning",
+          "widget": "multiple_button",
+          "visibility": [
+            {
+              "type": "capability",
+              "field": "alpha_long_available",
+              "equals": true
+            }
+          ],
+          "enablement": [
+            {
+              "type": "offroad_only"
+            },
+            {
+              "type": "capability",
+              "field": "has_longitudinal_control",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    "toyota": {
+      "title": "Toyota / Lexus Settings",
+      "description": "Brand-specific settings for Toyota and Lexus vehicles",
+      "items": [
+        {
+          "key": "ToyotaEnforceStockLongitudinal",
+          "widget": "toggle",
+          "enablement": [
+            {
+              "type": "offroad_only"
+            }
+          ]
+        },
+        {
+          "key": "ToyotaStopAndGoHack",
+          "widget": "toggle",
+          "enablement": [
+            {
+              "type": "offroad_only"
+            },
+            {
+              "type": "capability",
+              "field": "has_longitudinal_control",
+              "equals": true
+            },
+            {
+              "type": "param",
+              "key": "ToyotaEnforceStockLongitudinal",
+              "equals": false
+            }
+          ]
+        }
+      ]
+    },
+    "tesla": {
+      "title": "Tesla Settings",
+      "items": [
+        {
+          "key": "TeslaCoopSteering",
+          "widget": "toggle",
+          "enablement": [
+            {
+              "type": "offroad_only"
+            }
+          ]
+        }
+      ]
+    },
+    "subaru": {
+      "title": "Subaru Settings",
+      "items": [
+        {
+          "key": "SubaruStopAndGo",
+          "widget": "toggle",
+          "enablement": [
+            {
+              "type": "offroad_only"
+            },
+            {
+              "type": "capability",
+              "field": "has_stop_and_go",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "key": "SubaruStopAndGoManualParkingBrake",
+          "widget": "toggle",
+          "enablement": [
+            {
+              "type": "offroad_only"
+            },
+            {
+              "type": "capability",
+              "field": "has_stop_and_go",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    }
   }
 }
