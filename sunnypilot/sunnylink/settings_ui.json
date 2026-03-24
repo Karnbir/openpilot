@@ -12,8 +12,8 @@
       "sections": [
         {
           "id": "mads",
-          "title": "MADS",
-          "description": "Modified Assistive Driving Safety",
+          "title": "Modular Assistive Driving System (MADS)",
+          "description": "",
           "items": [
             {
               "key": "Mads",
@@ -23,7 +23,7 @@
                   "type": "offroad_only"
                 }
               ],
-              "title": "Modular Assistive Driving System (MADS)",
+              "title": "Enable Modular Assistive Driving System (MADS)",
               "description": "Enable the beloved MADS feature. Disable toggle to revert back to stock sunnypilot engagement/disengagement."
             }
           ],
@@ -337,69 +337,61 @@
           "id": "lane_change",
           "title": "Lane Change",
           "description": "Automatic lane change timing and behavior",
-          "items": [],
-          "sub_panels": [
+          "items": [
             {
-              "id": "lane_change_settings",
-              "label": "Lane Change Settings",
-              "trigger_key": "AutoLaneChangeTimer",
-              "items": [
+              "key": "AutoLaneChangeTimer",
+              "widget": "option",
+              "title": "Auto Lane Change by Blinker",
+              "description": "Set a timer to delay the auto lane change operation when the blinker is used. No nudge on the steering wheel is required to auto lane change if a timer is set. Default is Nudge. Please use caution when using this feature. Only use the blinker when traffic and road conditions permit.",
+              "options": [
                 {
-                  "key": "AutoLaneChangeTimer",
-                  "widget": "multiple_button",
-                  "title": "Auto Lane Change by Blinker",
-                  "description": "Set a timer to delay the auto lane change operation when the blinker is used. No nudge on the steering wheel is required to auto lane change if a timer is set. Default is Nudge. Please use caution when using this feature. Only use the blinker when traffic and road conditions permit.",
-                  "options": [
-                    {
-                      "value": -1,
-                      "label": "Off"
-                    },
-                    {
-                      "value": 0,
-                      "label": "Nudge"
-                    },
-                    {
-                      "value": 1,
-                      "label": "Nudgeless"
-                    },
-                    {
-                      "value": 2,
-                      "label": "0.5s"
-                    },
-                    {
-                      "value": 3,
-                      "label": "1s"
-                    },
-                    {
-                      "value": 4,
-                      "label": "2s"
-                    },
-                    {
-                      "value": 5,
-                      "label": "3s"
-                    }
-                  ]
+                  "value": -1,
+                  "label": "Off"
                 },
                 {
-                  "key": "AutoLaneChangeBsmDelay",
-                  "widget": "toggle",
-                  "enablement": [
-                    {
-                      "type": "capability",
-                      "field": "enable_bsm",
-                      "equals": true
-                    },
-                    {
-                      "type": "param_compare",
-                      "key": "AutoLaneChangeTimer",
-                      "op": ">",
-                      "value": 0
-                    }
-                  ],
-                  "title": "Auto Lane Change: Delay with Blind Spot",
-                  "description": "Toggle to enable a delay timer for seamless lane changes when blind spot monitoring (BSM) detects an obstructing vehicle, ensuring safe maneuvering."
+                  "value": 0,
+                  "label": "Nudge"
+                },
+                {
+                  "value": 1,
+                  "label": "Nudgeless"
+                },
+                {
+                  "value": 2,
+                  "label": "0.5 second"
+                },
+                {
+                  "value": 3,
+                  "label": "1 second"
+                },
+                {
+                  "value": 4,
+                  "label": "2 seconds"
+                },
+                {
+                  "value": 5,
+                  "label": "3 seconds"
                 }
               ]
+            },
+            {
+              "key": "AutoLaneChangeBsmDelay",
+              "widget": "toggle",
+              "enablement": [
+                {
+                  "type": "capability",
+                  "field": "enable_bsm",
+                  "equals": true
+                },
+                {
+                  "type": "param_compare",
+                  "key": "AutoLaneChangeTimer",
+                  "op": ">",
+                  "value": 0
+                }
+              ],
+              "title": "Auto Lane Change: Delay with Blind Spot",
+              "description": "Toggle to enable a delay timer for seamless lane changes when blind spot monitoring (BSM) detects an obstructing vehicle, ensuring safe maneuvering."
             }
           ]
         }
@@ -1142,8 +1134,8 @@
       "sections": [
         {
           "id": "core_toggles",
-          "title": "Core Toggles",
-          "description": "Primary driving assist and safety features",
+          "title": "",
+          "description": "",
           "items": [
             {
               "key": "OpenpilotEnabledToggle",
@@ -1170,6 +1162,12 @@
               "title": "Experimental Mode"
             },
             {
+              "key": "DisengageOnAccelerator",
+              "widget": "toggle",
+              "title": "Disengage on Accelerator Pedal",
+              "description": "When enabled, pressing the accelerator pedal will disengage sunnypilot."
+            },
+            {
               "key": "IsLdwEnabled",
               "widget": "toggle",
               "title": "Enable Lane Departure Warnings",
@@ -1180,6 +1178,12 @@
               "widget": "toggle",
               "title": "Always-On Driver Monitoring",
               "description": "Enable driver monitoring even when sunnypilot is not engaged."
+            },
+            {
+              "key": "IsMetric",
+              "widget": "toggle",
+              "title": "Use Metric System",
+              "description": "Display speed in km/h instead of mph."
             }
           ]
         },
@@ -1226,7 +1230,7 @@
             },
             {
               "key": "DeviceBootMode",
-              "widget": "multiple_button",
+              "widget": "option",
               "title": "Wake Up Behavior",
               "description": "Controls state of the device after boot/sleep. Default: Device will boot/wake-up normally and will be ready to engage. Offroad: Device will be in Always Offroad mode after boot/wake-up.",
               "options": [
@@ -1239,12 +1243,6 @@
                   "label": "Always Offroad"
                 }
               ]
-            },
-            {
-              "key": "IsMetric",
-              "widget": "toggle",
-              "title": "Use Metric System",
-              "description": "Display speed in km/h instead of mph."
             },
             {
               "key": "QuietMode",
@@ -1328,12 +1326,6 @@
                   "label": "30h (Default)"
                 }
               ]
-            },
-            {
-              "key": "DisengageOnAccelerator",
-              "widget": "toggle",
-              "title": "Disengage on Accelerator Pedal",
-              "description": "When enabled, pressing the accelerator pedal will disengage sunnypilot."
             }
           ]
         }
