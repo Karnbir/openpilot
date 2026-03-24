@@ -29,6 +29,9 @@ lenv = env.Clone()
 # ekf filter libraries need to be linked, even if no symbols are used
 if arch != "Darwin":
   lenv["LINKFLAGS"] += ["-Wl,--no-as-needed"]
+else:
+  # On macOS, point the executable at the generated filter dylibs next to it.
+  lenv["LINKFLAGS"] += ["-Wl,-rpath,@loader_path/models/generated"]
 
 lenv["LIBPATH"].append(Dir(rednose_gen_dir).abspath)
 lenv["RPATH"].append(Dir(rednose_gen_dir).abspath)
