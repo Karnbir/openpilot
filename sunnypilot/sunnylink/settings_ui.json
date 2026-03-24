@@ -73,11 +73,47 @@
                   "options": [
                     {
                       "value": 0,
-                      "label": "Remain Active"
+                      "label": "Remain Active",
+                      "enablement": [
+                        {
+                          "type": "not",
+                          "condition": {
+                            "type": "any",
+                            "conditions": [
+                              { "type": "capability", "field": "brand", "equals": "rivian" },
+                              {
+                                "type": "all",
+                                "conditions": [
+                                  { "type": "capability", "field": "brand", "equals": "tesla" },
+                                  { "type": "not", "condition": { "type": "capability", "field": "tesla_has_vehicle_bus", "equals": true } }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
                     },
                     {
                       "value": 1,
-                      "label": "Pause"
+                      "label": "Pause",
+                      "enablement": [
+                        {
+                          "type": "not",
+                          "condition": {
+                            "type": "any",
+                            "conditions": [
+                              { "type": "capability", "field": "brand", "equals": "rivian" },
+                              {
+                                "type": "all",
+                                "conditions": [
+                                  { "type": "capability", "field": "brand", "equals": "tesla" },
+                                  { "type": "not", "condition": { "type": "capability", "field": "tesla_has_vehicle_bus", "equals": true } }
+                                ]
+                              }
+                            ]
+                          }
+                        }
+                      ]
                     },
                     {
                       "value": 2,
@@ -591,7 +627,30 @@
                     },
                     {
                       "value": 3,
-                      "label": "Assist"
+                      "label": "Assist",
+                      "enablement": [
+                        {
+                          "type": "any",
+                          "conditions": [
+                            { "type": "capability", "field": "has_longitudinal_control", "equals": true },
+                            { "type": "capability", "field": "has_icbm", "equals": true }
+                          ]
+                        },
+                        {
+                          "type": "not",
+                          "condition": { "type": "capability", "field": "brand", "equals": "rivian" }
+                        },
+                        {
+                          "type": "not",
+                          "condition": {
+                            "type": "all",
+                            "conditions": [
+                              { "type": "capability", "field": "brand", "equals": "tesla" },
+                              { "type": "capability", "field": "is_sp_release", "equals": true }
+                            ]
+                          }
+                        }
+                      ]
                     }
                   ]
                 },
