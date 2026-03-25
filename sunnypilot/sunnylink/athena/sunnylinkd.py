@@ -52,45 +52,9 @@ BLOCKED_PARAMS = {
   "GithubSshKeys",   # Direct SSH key injection
   "HasAcceptedTerms",
   "HasAcceptedTermsSP",
-  "OnroadCyclePendingRemote",  # Device-managed pending state
   "OnroadCycleRequested",      # Prevent remote cycle trigger
   "ParamsVersion",         # Device-managed version counter
 }
-
-SETTINGS_UI_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "settings_ui.json")
-
-
-def _load_onroad_cycle_params() -> set[str]:
-  """Build set of param keys that require an onroad cycle from settings_ui.json."""
-  try:
-    with open(SETTINGS_UI_PATH) as f:
-      definition = json.load(f)
-  except Exception:
-    return set()
-
-  cycle_params: set[str] = set()
-
-  def _collect(items: list[dict]) -> None:
-    for item in items:
-      if item.get("needs_onroad_cycle"):
-        cycle_params.add(item["key"])
-      if "sub_items" in item:
-        _collect(item["sub_items"])
-
-  for panel in definition.get("panels", []):
-    _collect(panel.get("items", []))
-    for section in panel.get("sections", []):
-      _collect(section.get("items", []))
-      for sub_panel in section.get("sub_panels", []):
-        _collect(sub_panel.get("items", []))
-
-  for brand_settings in definition.get("vehicle_settings", {}).values():
-    _collect(brand_settings.get("items", []))
-
-  return cycle_params
-
-
-ONROAD_CYCLE_PARAMS: set[str] = _load_onroad_cycle_params()
 
 
 def handle_long_poll(ws: WebSocket, exit_event: threading.Event | None) -> None:
@@ -309,10 +273,6 @@ def saveParams(params_to_update: dict[str, str], compression: bool = False) -> N
       save_param_from_base64_encoded_string(key, value, compression)
     except Exception as e:
       cloudlog.error(f"sunnylinkd.saveParams.exception {e}")
-
-  # Trigger pending onroad cycle if any written param requires it
-  if ONROAD_CYCLE_PARAMS.intersection(params_to_update.keys()):
-    params.put_bool("OnroadCyclePendingRemote", True)
 
   # Increment version counter for frontend change detection
   try:
