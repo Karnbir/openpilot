@@ -14,7 +14,7 @@ from openpilot.selfdrive.ui.ui_state import ui_state
 from openpilot.system.ui.lib.application import FontWeight, gui_app
 from openpilot.system.ui.lib.multilang import tr
 from openpilot.system.ui.widgets import Widget
-from openpilot.system.ui.widgets.label import MiciLabel
+from openpilot.system.ui.widgets.label import UnifiedLabel
 from openpilot.system.ui.widgets.scroller import NavScroller
 
 class CurrentModelInfo(Widget):
@@ -26,11 +26,11 @@ class CurrentModelInfo(Widget):
     header_color = rl.Color(255, 255, 255, int(255 * 0.9))
     subheader_color = rl.Color(255, 255, 255, int(255 * 0.9 * 0.65))
     max_width = int(self._rect.width - 20)
-    self.current_model_header = MiciLabel(tr("active model"), 48, width=max_width, color=header_color, font_weight=FontWeight.DISPLAY)
-    self.current_model_text = MiciLabel(tr("default model"), 32, width=max_width, color=subheader_color, font_weight=FontWeight.ROMAN)
+    self.current_model_header = UnifiedLabel(tr("active model"), 48, max_width=max_width, text_color=header_color, font_weight=FontWeight.DISPLAY)
+    self.current_model_text = UnifiedLabel(tr("default model"), 32, max_width=max_width, text_color=subheader_color, font_weight=FontWeight.ROMAN)
 
-    self.info_header = MiciLabel("", 48, color=header_color, font_weight=FontWeight.DISPLAY)
-    self.info_text = MiciLabel("", 32, width=max_width, color=subheader_color, font_weight=FontWeight.ROMAN)
+    self.info_header = UnifiedLabel("", 48, text_color=header_color, font_weight=FontWeight.DISPLAY)
+    self.info_text = UnifiedLabel("", 32, max_width=max_width, text_color=subheader_color, font_weight=FontWeight.ROMAN)
 
   def _render(self, _):
     self.current_model_header.set_position(self._rect.x + 20, self._rect.y - 10)
@@ -56,10 +56,10 @@ class ModelsLayoutMici(NavScroller):
     self._download_progress = "."
     self._download_frame = 0
 
-    self.select_model_btn = BigButton(tr("select model"), "", "")
+    self.select_model_btn = BigButton(tr("select model"))
     self.select_model_btn.set_click_callback(self._show_folders)
 
-    self.cancel_download_btn = BigButton(tr("cancel download"), "", "")
+    self.cancel_download_btn = BigButton(tr("cancel download"))
     self.cancel_download_btn.set_click_callback(lambda: ui_state.params.remove("ModelManager_DownloadIndex"))
 
     self.main_items = [self.current_model_info, self.select_model_btn, self.cancel_download_btn]
@@ -88,13 +88,13 @@ class ModelsLayoutMici(NavScroller):
     self.focused_widget = self.select_model_btn
     folders = self._get_grouped_bundles()
     folder_buttons = []
-    default_btn = BigButton(tr("default model"), "", "")
+    default_btn = BigButton(tr("default model"))
     default_btn.set_click_callback(self._select_default)
     folder_buttons.append(default_btn)
 
     for folder in sorted(folders.keys(), key=lambda f: max((bundle.index for bundle in folders[f]), default=-1), reverse=True):
       if folder.lower() in ["release models", "master models"]:
-        btn = BigButton(folder.lower(), "", "")
+        btn = BigButton(folder.lower())
         btn.set_click_callback(lambda f=folder: self._select_folder(f))
         folder_buttons.append(btn)
     self._show_selection_view(folder_buttons, self._reset_main_view)
@@ -114,7 +114,7 @@ class ModelsLayoutMici(NavScroller):
     btns = []
     for bundle in bundles:
       txt = bundle.displayName.lower()
-      btn = BigButton(txt, "", "")
+      btn = BigButton(txt)
       btn.set_click_callback(lambda b=bundle: self._select_model(b))
       btns.append(btn)
     self._show_selection_view(btns, self._show_folders)
