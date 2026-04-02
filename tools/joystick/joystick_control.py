@@ -55,10 +55,11 @@ class Joystick:
       steer_axis = 'ABS_Z'
       self.flip_map = {'ABS_RY': accel_axis}
 
-    self.min_axis_value = {accel_axis: 0., steer_axis: 0.}
-    self.max_axis_value = {accel_axis: 255., steer_axis: 255.}
-    self.axes_values = {accel_axis: 0., steer_axis: 0.}
-    self.axes_order = [accel_axis, steer_axis]
+    damp_axis = 'ABS_X'
+    self.min_axis_value = {accel_axis: 0., steer_axis: 0., damp_axis: 0.}
+    self.max_axis_value = {accel_axis: 255., steer_axis: 255., damp_axis: 255.}
+    self.axes_values = {accel_axis: 0., steer_axis: 0., damp_axis: 0.}
+    self.axes_order = [accel_axis, steer_axis, damp_axis]
     self.cancel = False
 
   def update(self):
