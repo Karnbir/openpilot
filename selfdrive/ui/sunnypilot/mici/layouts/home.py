@@ -13,14 +13,14 @@ class MiciHomeLayoutSP(MiciHomeLayout):
   def _render(self, _):
     super()._render(_)
 
-    ITEM_SPACING = 18
-    Y_CENTER = 28
+    ITEM_SPACING = 10
+    Y_CENTER = 24
 
     if ui_state.always_offroad:
       text = "always offroad"
-      font_size = 32
-      padding_x = 10
-      padding_y = 10
+      font_size = 30
+      padding_x = 5
+      padding_y = 5
       font = gui_app.font(FontWeight.BOLD)
 
       # Measure text size
