@@ -148,6 +148,7 @@ class UIStateSP:
     self.true_v_ego_ui = self.params.get_bool("TrueVEgoUI")
     self.turn_signals = self.params.get_bool("ShowTurnSignals")
     self.boot_offroad_mode = self.params.get("DeviceBootMode", return_default=True)
+    self.always_offroad = self.params.get_bool("OffroadMode")
 
   def _enforce_sp_constraints(self) -> None:
     has_long = getattr(self, 'has_longitudinal_control', False)
