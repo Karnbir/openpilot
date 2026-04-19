@@ -27,10 +27,7 @@
       "type": "object",
       "description": "Brand-keyed vehicle-specific settings. Each key is a car brand (e.g. 'hyundai', 'toyota').",
       "additionalProperties": {
-        "type": "array",
-        "items": {
-          "$ref": "#/$defs/SchemaItem"
-        }
+        "$ref": "#/$defs/VehicleBrandSettings"
       }
     }
   },
@@ -113,6 +110,25 @@
           "description": "Sort order within the parent panel.",
           "minimum": 0
         },
+        "visibility": {
+          "type": "array",
+          "description": "Rules that determine whether this section is visible. All rules must pass.",
+          "items": {
+            "$ref": "#/$defs/Rule"
+          }
+        },
+        "enablement": {
+          "type": "array",
+          "description": "Rules that determine whether items in this section are enabled. All rules must pass.",
+          "items": {
+            "$ref": "#/$defs/Rule"
+          }
+        },
+        "attestation_required": {
+          "type": "boolean",
+          "description": "When true, the UI must show an attestation modal before any write to items in this section.",
+          "default": false
+        },
         "items": {
           "type": "array",
           "description": "Settings items within this section.",
@@ -125,6 +141,29 @@
           "description": "Nested sub-panels within this section.",
           "items": {
             "$ref": "#/$defs/SubPanel"
+          }
+        }
+      }
+    },
+    "VehicleBrandSettings": {
+      "type": "object",
+      "description": "Brand-specific settings group inside vehicle_settings.",
+      "required": ["items"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Display title for this brand's settings group."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description shown below the brand title."
+        },
+        "items": {
+          "type": "array",
+          "description": "Settings items for this brand.",
+          "items": {
+            "$ref": "#/$defs/SchemaItem"
           }
         }
       }
@@ -227,6 +266,40 @@
         "action": {
           "type": "string",
           "description": "Action identifier for button widgets."
+        },
+        "title_param_suffix": {
+          "type": "object",
+          "description": "Renders an extra suffix in the item title chosen by the value of another param.",
+          "required": ["param", "values"],
+          "additionalProperties": false,
+          "properties": {
+            "param": {
+              "type": "string",
+              "description": "Param key whose value selects the suffix label."
+            },
+            "values": {
+              "type": "object",
+              "description": "Map from stringified param value to suffix label.",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "needs_onroad_cycle": {
+          "type": "boolean",
+          "description": "When true, the device must cycle onroad/offroad for the new value to take effect.",
+          "default": false
+        },
+        "blocked": {
+          "type": "boolean",
+          "description": "When true, this item is treated as DEVICE_ONLY and the dashboard must not write it remotely.",
+          "default": false
+        },
+        "requires_attestation": {
+          "type": "boolean",
+          "description": "When true, writes to this item require an explicit per-write confirmation modal.",
+          "default": false
         }
       }
     },
@@ -277,6 +350,13 @@
         "label": {
           "type": "string",
           "description": "The display label for this option."
+        },
+        "enablement": {
+          "type": "array",
+          "description": "Rules that determine whether this option is selectable. All rules must pass.",
+          "items": {
+            "$ref": "#/$defs/Rule"
+          }
         }
       }
     },
@@ -284,6 +364,7 @@
       "description": "A visibility or enablement rule. Discriminated union on the 'type' field.",
       "oneOf": [
         { "$ref": "#/$defs/RuleOffroadOnly" },
+        { "$ref": "#/$defs/RuleNotEngaged" },
         { "$ref": "#/$defs/RuleCapability" },
         { "$ref": "#/$defs/RuleParam" },
         { "$ref": "#/$defs/RuleParamCompare" },
@@ -300,6 +381,17 @@
       "properties": {
         "type": {
           "const": "offroad_only"
+        }
+      }
+    },
+    "RuleNotEngaged": {
+      "type": "object",
+      "description": "Rule that passes when the vehicle is not engaged (matches Raylib `engaged = started AND (selfdriveState.enabled OR selfdriveStateSP.mads.enabled)`).",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "not_engaged"
         }
       }
     },
