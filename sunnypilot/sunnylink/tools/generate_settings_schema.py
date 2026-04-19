@@ -16,12 +16,52 @@ from collections.abc import Callable
 SCHEMA_VERSION = "1.0"
 _DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFINITION_PATH = os.path.join(_DIR, "settings_ui.json")
+TORQUE_VERSIONS_PATH = os.path.normpath(
+  os.path.join(_DIR, "..", "selfdrive", "controls", "lib", "latcontrol_torque_versions.json")
+)
+
+
+def _load_torque_versions() -> dict:
+  """Load latcontrol_torque_versions.json so TorqueControlTune options stay in sync."""
+  try:
+    with open(TORQUE_VERSIONS_PATH) as f:
+      return json.load(f)
+  except (FileNotFoundError, json.JSONDecodeError):
+    return {}
+
+
+def _build_torque_options(versions: dict) -> list[dict]:
+  options: list[dict] = [{"value": "", "label": "Default"}]
+  parsed: list[tuple[float, str]] = []
+  for label, info in versions.items():
+    try:
+      parsed.append((float(info["version"]), label))
+    except (KeyError, TypeError, ValueError):
+      continue
+  for version, label in sorted(parsed, key=lambda kv: kv[0], reverse=True):
+    options.append({"value": version, "label": label})
+  return options
+
+
+def _inject_dynamic_options(schema: dict) -> None:
+  versions = _load_torque_versions()
+  if not versions:
+    return
+  options = _build_torque_options(versions)
+
+  def visitor(item: dict) -> None:
+    if item.get("key") == "TorqueControlTune":
+      item["options"] = options
+
+  _walk_all_items(schema, visitor)
 
 
 def _load_definition() -> dict:
-  """Load settings_ui.json — the declarative UI definition file."""
+  """Load settings_ui.json and inject dynamic options sourced from runtime data files."""
   with open(DEFINITION_PATH) as f:
-    return json.load(f)
+    schema = json.load(f)
+  _inject_dynamic_options(schema)
+  return schema
 
 
 # Public API
