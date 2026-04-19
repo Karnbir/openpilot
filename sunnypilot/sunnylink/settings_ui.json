@@ -44,6 +44,37 @@
                   "enablement": [
                     {
                       "type": "offroad_only"
+                    },
+                    {
+                      "type": "not",
+                      "condition": {
+                        "type": "any",
+                        "conditions": [
+                          {
+                            "type": "capability",
+                            "field": "brand",
+                            "equals": "rivian"
+                          },
+                          {
+                            "type": "all",
+                            "conditions": [
+                              {
+                                "type": "capability",
+                                "field": "brand",
+                                "equals": "tesla"
+                              },
+                              {
+                                "type": "not",
+                                "condition": {
+                                  "type": "capability",
+                                  "field": "tesla_has_vehicle_bus",
+                                  "equals": true
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
                     }
                   ],
                   "title": "Toggle with Main Cruise",
@@ -55,6 +86,37 @@
                   "enablement": [
                     {
                       "type": "offroad_only"
+                    },
+                    {
+                      "type": "not",
+                      "condition": {
+                        "type": "any",
+                        "conditions": [
+                          {
+                            "type": "capability",
+                            "field": "brand",
+                            "equals": "rivian"
+                          },
+                          {
+                            "type": "all",
+                            "conditions": [
+                              {
+                                "type": "capability",
+                                "field": "brand",
+                                "equals": "tesla"
+                              },
+                              {
+                                "type": "not",
+                                "condition": {
+                                  "type": "capability",
+                                  "field": "tesla_has_vehicle_bus",
+                                  "equals": true
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
                     }
                   ],
                   "title": "Unified Engagement Mode (UEM)",
@@ -520,9 +582,6 @@
               ],
               "enablement": [
                 {
-                  "type": "offroad_only"
-                },
-                {
                   "type": "capability",
                   "field": "has_longitudinal_control",
                   "equals": true
@@ -535,12 +594,7 @@
               "key": "DisengageOnAccelerator",
               "widget": "toggle",
               "title": "Disengage Cruise on Accelerator Pedal",
-              "description": "When enabled, pressing the accelerator pedal will disengage longitudinal control.",
-              "enablement": [
-                {
-                  "type": "offroad_only"
-                }
-              ]
+              "description": "When enabled, pressing the accelerator pedal will disengage longitudinal control."
             },
             {
               "key": "LongitudinalPersonality",
@@ -820,14 +874,6 @@
                       "value": 4,
                       "label": "Combined"
                     }
-                  ],
-                  "enablement": [
-                    {
-                      "type": "param_compare",
-                      "key": "SpeedLimitMode",
-                      "op": ">",
-                      "value": 0
-                    }
                   ]
                 },
                 {
@@ -847,14 +893,6 @@
                       "value": 2,
                       "label": "Percentage"
                     }
-                  ],
-                  "enablement": [
-                    {
-                      "type": "param_compare",
-                      "key": "SpeedLimitMode",
-                      "op": ">",
-                      "value": 0
-                    }
                   ]
                 },
                 {
@@ -868,23 +906,12 @@
                     "metric": "km/h",
                     "imperial": "mph"
                   },
-                  "enablement": [
+                  "visibility": [
                     {
-                      "type": "all",
-                      "conditions": [
-                        {
-                          "type": "param_compare",
-                          "key": "SpeedLimitMode",
-                          "op": ">",
-                          "value": 0
-                        },
-                        {
-                          "type": "param_compare",
-                          "key": "SpeedLimitOffsetType",
-                          "op": ">",
-                          "value": 0
-                        }
-                      ]
+                      "type": "param_compare",
+                      "key": "SpeedLimitOffsetType",
+                      "op": ">",
+                      "value": 0
                     }
                   ]
                 }
@@ -1600,14 +1627,16 @@
             {
               "key": "DisableUpdates",
               "widget": "toggle",
-              "enablement": [
-                {
-                  "type": "offroad_only"
-                },
+              "visibility": [
                 {
                   "type": "param",
                   "key": "ShowAdvancedControls",
                   "equals": true
+                }
+              ],
+              "enablement": [
+                {
+                  "type": "offroad_only"
                 }
               ],
               "title": "Disable Updates",
@@ -1655,9 +1684,19 @@
                 {
                   "type": "not",
                   "condition": {
-                    "type": "capability",
-                    "field": "is_release",
-                    "equals": true
+                    "type": "any",
+                    "conditions": [
+                      {
+                        "type": "capability",
+                        "field": "is_release",
+                        "equals": true
+                      },
+                      {
+                        "type": "capability",
+                        "field": "is_sp_release",
+                        "equals": true
+                      }
+                    ]
                   }
                 }
               ],
@@ -1667,31 +1706,6 @@
                 }
               ],
               "title": "Joystick Debug Mode"
-            },
-            {
-              "key": "LongitudinalManeuverMode",
-              "widget": "toggle",
-              "visibility": [
-                {
-                  "type": "not",
-                  "condition": {
-                    "type": "capability",
-                    "field": "is_release",
-                    "equals": true
-                  }
-                }
-              ],
-              "enablement": [
-                {
-                  "type": "offroad_only"
-                },
-                {
-                  "type": "capability",
-                  "field": "has_longitudinal_control",
-                  "equals": true
-                }
-              ],
-              "title": "Longitudinal Maneuver Mode"
             },
             {
               "key": "AlphaLongitudinalEnabled",
@@ -1709,9 +1723,19 @@
                     {
                       "type": "not",
                       "condition": {
-                        "type": "capability",
-                        "field": "is_release",
-                        "equals": true
+                        "type": "any",
+                        "conditions": [
+                          {
+                            "type": "capability",
+                            "field": "is_release",
+                            "equals": true
+                          },
+                          {
+                            "type": "capability",
+                            "field": "is_sp_release",
+                            "equals": true
+                          }
+                        ]
                       }
                     }
                   ]
@@ -1719,7 +1743,7 @@
               ],
               "enablement": [
                 {
-                  "type": "offroad_only"
+                  "type": "not_engaged"
                 }
               ],
               "title": "sunnypilot Longitudinal Control (Alpha)",
@@ -1729,6 +1753,73 @@
               "key": "ShowDebugInfo",
               "widget": "toggle",
               "title": "UI Debug Mode"
+            }
+          ]
+        },
+        {
+          "id": "test_maneuvers",
+          "title": "Test Maneuvers",
+          "description": "DANGER: enabling these maneuvers replaces normal driving behavior with deterministic test sequences. Each toggle requires explicit confirmation per write. Use only in a closed environment.",
+          "visibility": [
+            {
+              "type": "any",
+              "conditions": [
+                {
+                  "type": "capability",
+                  "field": "is_development",
+                  "equals": true
+                },
+                {
+                  "type": "all",
+                  "conditions": [
+                    {
+                      "type": "capability",
+                      "field": "is_sp_release",
+                      "equals": true
+                    },
+                    {
+                      "type": "param",
+                      "key": "ShowAdvancedControls",
+                      "equals": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "attestation_required": true,
+          "items": [
+            {
+              "key": "LateralManeuverMode",
+              "widget": "toggle",
+              "title": "[TEST] Lateral Maneuver Mode",
+              "description": "Replaces normal lateral control with a deterministic test sequence. NOT for road use.",
+              "enablement": [
+                {
+                  "type": "not_engaged"
+                },
+                {
+                  "type": "capability",
+                  "field": "torque_allowed",
+                  "equals": true
+                }
+              ]
+            },
+            {
+              "key": "LongitudinalManeuverMode",
+              "widget": "toggle",
+              "title": "[TEST] Longitudinal Maneuver Mode",
+              "description": "Replaces normal longitudinal control with a deterministic test sequence. NOT for road use.",
+              "enablement": [
+                {
+                  "type": "not_engaged"
+                },
+                {
+                  "type": "capability",
+                  "field": "has_longitudinal_control",
+                  "equals": true
+                }
+              ]
             }
           ]
         },
@@ -1748,7 +1839,7 @@
               "widget": "toggle",
               "title": "GitHub Runner Service",
               "description": "Enables or disables the GitHub runner service.",
-              "enablement": [
+              "visibility": [
                 {
                   "type": "all",
                   "conditions": [
@@ -1760,9 +1851,19 @@
                     {
                       "type": "not",
                       "condition": {
-                        "type": "capability",
-                        "field": "is_release",
-                        "equals": true
+                        "type": "any",
+                        "conditions": [
+                          {
+                            "type": "capability",
+                            "field": "is_release",
+                            "equals": true
+                          },
+                          {
+                            "type": "capability",
+                            "field": "is_sp_release",
+                            "equals": true
+                          }
+                        ]
                       }
                     }
                   ]
@@ -1774,7 +1875,7 @@
               "widget": "toggle",
               "title": "copyparty Service",
               "description": "copyparty is a very capable file server, you can use it to download your routes, view your logs and even make some edits on some files from your browser. Requires you to connect to your comma locally via its IP address.",
-              "enablement": [
+              "visibility": [
                 {
                   "type": "param",
                   "key": "ShowAdvancedControls",
@@ -1785,12 +1886,7 @@
             {
               "key": "QuickBootToggle",
               "widget": "toggle",
-              "enablement": [
-                {
-                  "type": "param",
-                  "key": "DisableUpdates",
-                  "equals": true
-                },
+              "visibility": [
                 {
                   "type": "all",
                   "conditions": [
@@ -1802,20 +1898,34 @@
                     {
                       "type": "not",
                       "condition": {
-                        "type": "capability",
-                        "field": "is_release",
-                        "equals": true
-                      }
-                    },
-                    {
-                      "type": "not",
-                      "condition": {
-                        "type": "capability",
-                        "field": "is_development",
-                        "equals": true
+                        "type": "any",
+                        "conditions": [
+                          {
+                            "type": "capability",
+                            "field": "is_release",
+                            "equals": true
+                          },
+                          {
+                            "type": "capability",
+                            "field": "is_sp_release",
+                            "equals": true
+                          },
+                          {
+                            "type": "capability",
+                            "field": "is_development",
+                            "equals": true
+                          }
+                        ]
                       }
                     }
                   ]
+                }
+              ],
+              "enablement": [
+                {
+                  "type": "param",
+                  "key": "DisableUpdates",
+                  "equals": true
                 }
               ],
               "title": "Quickboot Mode"
@@ -1855,7 +1965,7 @@
                 "metric": "km/h",
                 "imperial": "mph"
               },
-              "enablement": [
+              "visibility": [
                 {
                   "type": "all",
                   "conditions": [
@@ -1887,7 +1997,7 @@
               "min": 0.05,
               "max": 0.5,
               "step": 0.01,
-              "enablement": [
+              "visibility": [
                 {
                   "type": "all",
                   "conditions": [
@@ -1976,6 +2086,13 @@
         {
           "key": "HyundaiLongitudinalTuning",
           "widget": "multiple_button",
+          "visibility": [
+            {
+              "type": "capability",
+              "field": "hyundai_alpha_long_available",
+              "equals": true
+            }
+          ],
           "enablement": [
             {
               "type": "offroad_only"
@@ -2014,7 +2131,7 @@
           "needs_onroad_cycle": true,
           "enablement": [
             {
-              "type": "offroad_only"
+              "type": "not_engaged"
             }
           ],
           "title": "Enforce Factory Longitudinal Control",
@@ -2026,7 +2143,7 @@
           "needs_onroad_cycle": true,
           "enablement": [
             {
-              "type": "offroad_only"
+              "type": "not_engaged"
             },
             {
               "type": "capability",
