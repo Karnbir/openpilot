@@ -19,9 +19,41 @@ from openpilot.sunnypilot.sunnylink.capabilities import CAPABILITY_FIELDS
 
 
 VALID_WIDGET_TYPES = {"toggle", "option", "multiple_button", "button", "info"}
-VALID_RULE_TYPES = {"offroad_only", "capability", "param", "param_compare", "not", "any", "all"}
+VALID_RULE_TYPES = {"offroad_only", "not_engaged", "capability", "param", "param_compare", "not", "any", "all"}
 VALID_COMPARE_OPS = {">", "<", ">=", "<="}
 MAX_ALLOWED_MISSING_TITLES = 0  # All items must have titles (metadata is inline in settings_ui.json)
+
+
+def _iter_panel_items(panel: dict):
+  """Yield top-level items reachable from a panel: panel.items, panel.sub_panels.items,
+  panel.sections.items, panel.sections.sub_panels.items. Does not recurse sub_items."""
+  for item in panel.get("items", []):
+    yield item
+  for sp in panel.get("sub_panels", []):
+    for item in sp.get("items", []):
+      yield item
+  for section in panel.get("sections", []):
+    for item in section.get("items", []):
+      yield item
+    for sp in section.get("sub_panels", []):
+      for item in sp.get("items", []):
+        yield item
+
+
+def _iter_all_sub_panels(panel: dict):
+  """Yield every sub_panel (panel-level + section-nested)."""
+  yield from panel.get("sub_panels", [])
+  for section in panel.get("sections", []):
+    yield from section.get("sub_panels", [])
+
+
+def _brand_items(brand_data) -> list[dict]:
+  """vehicle_settings[brand] is dict {title, description?, items}; tolerate raw list."""
+  if isinstance(brand_data, dict):
+    return brand_data.get("items", [])
+  if isinstance(brand_data, list):
+    return brand_data
+  return []
 
 
 @pytest.fixture(scope="module")
@@ -58,13 +90,23 @@ class TestSchemaStructure:
     for panel in schema["panels"]:
       assert "id" in panel, f"Panel missing 'id': {panel}"
       assert "label" in panel, f"Panel {panel.get('id')} missing 'label'"
-      assert "items" in panel, f"Panel {panel.get('id')} missing 'items'"
       assert "order" in panel, f"Panel {panel.get('id')} missing 'order'"
-      assert isinstance(panel["items"], list)
+      has_sections = "sections" in panel
+      has_items = "items" in panel
+      assert has_sections or has_items, \
+        f"Panel {panel['id']} must have 'sections' or 'items'"
+      if has_sections:
+        assert isinstance(panel["sections"], list)
+        for sec in panel["sections"]:
+          assert "id" in sec, f"Section in panel {panel['id']} missing 'id'"
+          assert "items" in sec, f"Section {panel['id']}.{sec.get('id')} missing 'items'"
+          assert isinstance(sec["items"], list)
+      if has_items:
+        assert isinstance(panel["items"], list)
 
   def test_all_items_have_key_and_widget(self, schema):
     for panel in schema["panels"]:
-      for item in panel["items"]:
+      for item in _iter_panel_items(panel):
         assert "key" in item, f"Item in panel {panel['id']} missing 'key'"
         assert "widget" in item, f"Item {item.get('key')} missing 'widget'"
         assert item["widget"] in VALID_WIDGET_TYPES, \
@@ -72,7 +114,7 @@ class TestSchemaStructure:
 
   def test_sub_panel_items_have_key_and_widget(self, schema):
     for panel in schema["panels"]:
-      for sp in panel.get("sub_panels", []):
+      for sp in _iter_all_sub_panels(panel):
         assert "id" in sp
         assert "items" in sp
         for item in sp["items"]:
@@ -83,10 +125,13 @@ class TestSchemaStructure:
   def test_vehicle_settings_structure(self, schema):
     vs = schema["vehicle_settings"]
     assert isinstance(vs, dict)
-    for brand, items in vs.items():
+    for brand, data in vs.items():
       assert isinstance(brand, str)
-      assert isinstance(items, list)
-      for item in items:
+      assert isinstance(data, dict), \
+        f"vehicle_settings[{brand}] must be a dict {{title, items, ...}}"
+      assert "items" in data, f"vehicle_settings[{brand}] missing 'items'"
+      assert isinstance(data["items"], list)
+      for item in data["items"]:
         assert "key" in item, f"Vehicle item for {brand} missing 'key'"
         assert "widget" in item, f"Vehicle item {item.get('key')} missing 'widget'"
 
@@ -94,7 +139,7 @@ class TestSchemaStructure:
     """Each param key should appear in at most one panel to avoid double-rendering."""
     seen: dict[str, str] = {}  # key -> panel_id
     for panel in schema["panels"]:
-      for item in panel["items"]:
+      for item in _iter_panel_items(panel):
         key = item["key"]
         if key in seen:
           pytest.fail(f"Key '{key}' appears in both panel '{seen[key]}' and '{panel['id']}'")
@@ -164,15 +209,23 @@ class TestRuleWellFormedness:
       for sub in item.get("sub_items", []):
         self._validate_items([sub], context=f"{context}.{key}")
 
+  def _validate_section_rules(self, section: dict, context: str):
+    for rules_field in ("visibility", "enablement"):
+      rules = section.get(rules_field) or []
+      for rule in rules:
+        self._validate_rule(rule, context=f"{context}.{rules_field}")
+
   def test_all_panel_rules_well_formed(self, schema):
     for panel in schema["panels"]:
-      self._validate_items(panel["items"], context=f"panel:{panel['id']}")
-      for sp in panel.get("sub_panels", []):
+      self._validate_items(list(_iter_panel_items(panel)), context=f"panel:{panel['id']}")
+      for sp in _iter_all_sub_panels(panel):
         self._validate_items(sp["items"], context=f"subpanel:{sp['id']}")
+      for section in panel.get("sections", []):
+        self._validate_section_rules(section, context=f"section:{panel['id']}.{section['id']}")
 
   def test_all_vehicle_rules_well_formed(self, schema):
-    for brand, items in schema["vehicle_settings"].items():
-      self._validate_items(items, context=f"vehicle:{brand}")
+    for brand, data in schema["vehicle_settings"].items():
+      self._validate_items(_brand_items(data), context=f"vehicle:{brand}")
 
   def test_no_self_referencing_visibility(self, schema):
     """An item's visibility/enablement rules should not depend on its own key."""
@@ -183,16 +236,12 @@ class TestRuleWellFormedness:
           pytest.fail(f"Item {key} has self-referencing {rules_field} rule")
 
     for panel in schema["panels"]:
-      for item in panel["items"]:
+      for item in _iter_panel_items(panel):
         _check_self_ref(item, "visibility")
         _check_self_ref(item, "enablement")
-      for sp in panel.get("sub_panels", []):
-        for item in sp["items"]:
-          _check_self_ref(item, "visibility")
-          _check_self_ref(item, "enablement")
 
-    for brand_items in schema.get("vehicle_settings", {}).values():
-      for item in brand_items:
+    for brand_data in schema.get("vehicle_settings", {}).values():
+      for item in _brand_items(brand_data):
         _check_self_ref(item, "visibility")
         _check_self_ref(item, "enablement")
 
@@ -205,16 +254,20 @@ class TestKnownPanels:
 
   def test_mads_sub_panel_exists(self, schema):
     steering = next(p for p in schema["panels"] if p["id"] == "steering")
-    sub_ids = {sp["id"] for sp in steering.get("sub_panels", [])}
+    sub_ids = {sp["id"] for sp in _iter_all_sub_panels(steering)}
     assert "mads_settings" in sub_ids
 
   def test_mutual_exclusion_torque_nnlc(self, schema):
     """EnforceTorqueControl and NNLC should have cross-param rules."""
-    steering = next(p for p in schema["panels"] if p["id"] == "steering")
-    torque = next((i for i in steering["items"] if i["key"] == "EnforceTorqueControl"), None)
-    nnlc = next((i for i in steering["items"] if i["key"] == "NeuralNetworkLateralControl"), None)
-    assert torque is not None
-    assert nnlc is not None
+    torque = nnlc = None
+    for panel in schema["panels"]:
+      for item in _iter_panel_items(panel):
+        if item["key"] == "EnforceTorqueControl":
+          torque = item
+        elif item["key"] == "NeuralNetworkLateralControl":
+          nnlc = item
+    assert torque is not None, "EnforceTorqueControl item missing"
+    assert nnlc is not None, "NeuralNetworkLateralControl item missing"
     torque_enable_keys = {r.get("key") for r in torque.get("enablement", []) if r.get("type") == "param"}
     assert "NeuralNetworkLateralControl" in torque_enable_keys
     nnlc_enable_keys = {r.get("key") for r in nnlc.get("enablement", []) if r.get("type") == "param"}
@@ -223,47 +276,38 @@ class TestKnownPanels:
 
 class TestKnownVehicleSettings:
   def test_hyundai_has_longitudinal_tuning(self, schema):
-    hyundai = schema["vehicle_settings"].get("hyundai", [])
-    keys = {i["key"] for i in hyundai}
+    keys = {i["key"] for i in _brand_items(schema["vehicle_settings"].get("hyundai"))}
     assert "HyundaiLongitudinalTuning" in keys
 
   def test_toyota_has_enforce_stock_and_stop_go(self, schema):
-    toyota = schema["vehicle_settings"].get("toyota", [])
-    keys = {i["key"] for i in toyota}
+    keys = {i["key"] for i in _brand_items(schema["vehicle_settings"].get("toyota"))}
     assert "ToyotaEnforceStockLongitudinal" in keys
     assert "ToyotaStopAndGoHack" in keys
 
   def test_tesla_has_coop_steering(self, schema):
-    tesla = schema["vehicle_settings"].get("tesla", [])
-    keys = {i["key"] for i in tesla}
+    keys = {i["key"] for i in _brand_items(schema["vehicle_settings"].get("tesla"))}
     assert "TeslaCoopSteering" in keys
 
   def test_subaru_has_stop_and_go(self, schema):
-    subaru = schema["vehicle_settings"].get("subaru", [])
-    keys = {i["key"] for i in subaru}
+    keys = {i["key"] for i in _brand_items(schema["vehicle_settings"].get("subaru"))}
     assert "SubaruStopAndGo" in keys
     assert "SubaruStopAndGoManualParkingBrake" in keys
 
 
 class TestItemCompleteness:
   def _collect_all_items(self, schema):
-    """Collect all items from panels, sub_panels, sub_items, and vehicle_settings."""
+    """Collect every item, including sub_items, across panels (sections + flat) + vehicle_settings."""
     items = []
     for panel in schema["panels"]:
-      for item in panel["items"]:
+      for item in _iter_panel_items(panel):
         items.append(item)
         for sub in item.get("sub_items", []):
           items.append(sub)
-      for sp in panel.get("sub_panels", []):
-        for item in sp["items"]:
-          items.append(item)
-          for sub in item.get("sub_items", []):
-            items.append(sub)
-    for brand_items in schema.get("vehicle_settings", {}).values():
-      if isinstance(brand_items, list):
-        items.extend(brand_items)
-      elif isinstance(brand_items, dict):
-        items.extend(brand_items.get("items", []))
+    for brand_data in schema.get("vehicle_settings", {}).values():
+      for item in _brand_items(brand_data):
+        items.append(item)
+        for sub in item.get("sub_items", []):
+          items.append(sub)
     return items
 
   def test_all_items_have_titles(self, schema):
@@ -278,7 +322,7 @@ class TestItemCompleteness:
     assert not defaults, f"Items with default titles (title == key): {defaults}"
 
   def test_options_structure(self, schema):
-    """Options must be list of {{value, label}} dicts."""
+    """Options must be list of {value, label} dicts."""
     for item in self._collect_all_items(schema):
       opts = item.get("options")
       if opts is None:
@@ -304,7 +348,7 @@ class TestItemCompleteness:
   def test_known_param_has_options(self, schema):
     """LongitudinalPersonality should have 3 options."""
     cruise = next(p for p in schema["panels"] if p["id"] == "cruise")
-    lp = next((i for i in cruise["items"] if i["key"] == "LongitudinalPersonality"), None)
+    lp = next((i for i in _iter_panel_items(cruise) if i["key"] == "LongitudinalPersonality"), None)
     assert lp is not None
     assert "options" in lp
     assert len(lp["options"]) == 3

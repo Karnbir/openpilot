@@ -12,6 +12,9 @@ import gzip
 import json
 import os
 from collections.abc import Callable
+from datetime import datetime, timezone
+
+from openpilot.sunnypilot.sunnylink.capabilities import CAPABILITY_FIELDS, CAPABILITY_LABELS
 
 SCHEMA_VERSION = "1.0"
 _DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -66,8 +69,18 @@ def _load_definition() -> dict:
 
 # Public API
 def generate_schema() -> dict:
-  """Return the settings_ui.json content as-is."""
-  return _load_definition()
+  """Return the settings_ui.json content augmented with runtime metadata.
+
+  Adds three top-level fields the frontend consumes:
+    - generated_at: ISO timestamp (drives schema-cache freshness checks)
+    - capability_fields: declared CAPABILITY_FIELDS, used for rule validation
+    - capability_labels: human-readable labels for capability_fields
+  """
+  schema = _load_definition()
+  schema["generated_at"] = datetime.now(timezone.utc).isoformat()
+  schema["capability_fields"] = list(CAPABILITY_FIELDS)
+  schema["capability_labels"] = dict(CAPABILITY_LABELS)
+  return schema
 
 
 def generate_schema_json() -> str:

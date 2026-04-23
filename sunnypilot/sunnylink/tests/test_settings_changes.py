@@ -144,10 +144,13 @@ class TestTestManeuversSection:
     assert section is not None
     visibility = section.get("visibility")
     assert visibility, "test_maneuvers must have visibility gate"
-    refs = json.dumps(visibility)
-    assert "is_development" in refs
-    assert "is_sp_release" in refs
-    assert "ShowAdvancedControls" in refs
+    vis_refs = json.dumps(visibility)
+    assert "is_development" in vis_refs
+    assert "is_sp_release" in vis_refs
+    enablement = section.get("enablement") or []
+    enable_refs = json.dumps(enablement)
+    assert "ShowAdvancedControls" in enable_refs, \
+      "test_maneuvers must gate ShowAdvancedControls via enablement (disabled, not hidden)"
 
 
 class TestValidator:
