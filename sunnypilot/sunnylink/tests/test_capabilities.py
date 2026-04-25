@@ -54,7 +54,7 @@ class TestProtocolVersion:
     """Sentinel against accidental bumps. If you intentionally bumped the
     protocol, edit KNOWN_PROTOCOL_VERSIONS in the same commit."""
     assert PROTOCOL_VERSION in KNOWN_PROTOCOL_VERSIONS, (
-      f"PROTOCOL_VERSION={PROTOCOL_VERSION} is not in KNOWN_PROTOCOL_VERSIONS={KNOWN_PROTOCOL_VERSIONS}. "
+      f"PROTOCOL_VERSION={PROTOCOL_VERSION} is not in KNOWN_PROTOCOL_VERSIONS={KNOWN_PROTOCOL_VERSIONS}. " +
       "If this bump is intentional, add it to KNOWN_PROTOCOL_VERSIONS."
     )
 

@@ -12,7 +12,7 @@ import gzip
 import json
 import os
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import datetime
 
 from openpilot.sunnypilot.sunnylink.capabilities import CAPABILITY_FIELDS, CAPABILITY_LABELS
 
@@ -77,7 +77,7 @@ def generate_schema() -> dict:
     - capability_labels: human-readable labels for capability_fields
   """
   schema = _load_definition()
-  schema["generated_at"] = datetime.now(timezone.utc).isoformat()
+  schema["generated_at"] = datetime.now(datetime.UTC).isoformat()
   schema["capability_fields"] = list(CAPABILITY_FIELDS)
   schema["capability_labels"] = dict(CAPABILITY_LABELS)
   return schema
