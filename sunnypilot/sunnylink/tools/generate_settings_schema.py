@@ -8,11 +8,11 @@ See the LICENSE.md file in the root directory for more details.
 from __future__ import annotations
 
 import base64
+import datetime
 import gzip
 import json
 import os
 from collections.abc import Callable
-from datetime import datetime
 
 from openpilot.sunnypilot.sunnylink.capabilities import CAPABILITY_FIELDS, CAPABILITY_LABELS
 
@@ -77,7 +77,7 @@ def generate_schema() -> dict:
     - capability_labels: human-readable labels for capability_fields
   """
   schema = _load_definition()
-  schema["generated_at"] = datetime.now(datetime.UTC).isoformat()
+  schema["generated_at"] = datetime.datetime.now(datetime.UTC).isoformat()
   schema["capability_fields"] = list(CAPABILITY_FIELDS)
   schema["capability_labels"] = dict(CAPABILITY_LABELS)
   return schema
