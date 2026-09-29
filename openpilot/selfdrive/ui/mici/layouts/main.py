@@ -3,7 +3,7 @@ import openpilot.cereal.messaging as messaging
 from openpilot.selfdrive.ui.mici.layouts.home import MiciHomeLayout
 from openpilot.selfdrive.ui.mici.layouts.settings.settings import SettingsLayout
 from openpilot.selfdrive.ui.mici.layouts.offroad_alerts import MiciOffroadAlerts
-from openpilot.selfdrive.ui.mici.onroad.augmented_road_view import AugmentedRoadView
+from openpilot.selfdrive.ui.mici.onroad.speedometer_onroad import SpeedometerOnroadView
 from openpilot.selfdrive.ui.ui_state import device, ui_state
 from openpilot.selfdrive.ui.mici.layouts.onboarding import OnboardingWindow
 from openpilot.selfdrive.ui.body.layouts.onroad import BodyLayout
@@ -30,7 +30,7 @@ class MiciMainLayout(Scroller):
     self._home_layout = MiciHomeLayout()
     self._alerts_layout = MiciOffroadAlerts()
     self._settings_layout = SettingsLayout()
-    self._car_onroad_layout = AugmentedRoadView(bookmark_callback=self._on_bookmark_clicked)
+    self._car_onroad_layout = SpeedometerOnroadView(bookmark_callback=self._on_bookmark_clicked)
     self._body_onroad_layout = BodyLayout()
 
     # Initialize widget rects
@@ -48,7 +48,7 @@ class MiciMainLayout(Scroller):
     self._scroller.set_reset_scroll_at_show(False)
 
     # Disable scrolling when onroad is interacting with bookmark
-    self._scroller.set_scrolling_enabled(lambda: not self._car_onroad_layout.is_swiping_left())
+    self._scroller.set_scrolling_enabled(lambda: not self._car_onroad_layout.lock_horizontal_scroll)
 
     # Set callbacks
     self._setup_callbacks()
