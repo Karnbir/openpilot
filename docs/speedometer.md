@@ -25,7 +25,9 @@ Stock on-road rendering and gestures are unchanged when the instrument is hidden
   segments eases in over 0.16 s and out over 0.24 s (exponential time constants).
   Inactive or stale control data clears the arc immediately.
 - Custom beveled, slanted LCD digits, ghost electrodes and a layered Nixie halo need no
-  added assets. Gentle shimmer affects decorative light, never speed legibility.
+  added assets. A racing-inspired cubic shoulder eases into a horizontal top rail.
+  Shimmer varies only the outer halo by at most 2%; fills, mesh and digit edges
+  remain steady for legibility.
   Background is RGB (0, 0, 0). No driving/control code is changed.
 
 ## Desktop preview

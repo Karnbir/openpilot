@@ -83,14 +83,38 @@ def digit_shapes(count):
 
 @lru_cache(maxsize=1)
 def arc_shapes():
+  # A rising cubic shoulder that becomes a horizontal rail, inspired by racing marks.
+  def curve(t):
+    u = 1 - t
+    x = u**3 * 84 + 3 * u*u*t * 258 + 3 * u*t*t * 236 + t**3 * 660
+    y = u**3 * 260 + (1 - u**3) * 62
+    dx = 3*u*u*(258-84) + 6*u*t*(236-258) + 3*t*t*(660-236)
+    dy = 3*u*u*(62-260)
+    length = math.hypot(dx, dy)
+    return x, y, -dy / length, dx / length
+
+  # Equal distance cells avoid crowding at the curved shoulder.
+  samples = [curve(i / 240) for i in range(241)]
+  distances = [0.0]
+  for a, b in zip(samples, samples[1:], strict=False):
+    distances.append(distances[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
+
+  def at(distance):
+    for i in range(1, len(distances)):
+      if distances[i] >= distance:
+        blend = (distance - distances[i - 1]) / (distances[i] - distances[i - 1])
+        return curve((i - 1 + blend) / 240)
+    return samples[-1]
+
   shapes = []
   for i in range(SEGMENTS):
-    angle = math.radians(178 + i * 7.1)
-    end = angle + math.radians(5.6)
-    # Taper the charge rail gently as it sweeps over the numerals.
-    inner = 0.75 + i / SEGMENTS * 0.055
-    shapes.append(tuple((435 + 360 * r * math.cos(a), 278 + 235 * r * math.sin(a))
-                        for r, a in ((inner, angle), (1, angle), (1, end), (inner, end))))
+    ends = [at(distances[-1] * (i + f) / SEGMENTS) for f in (0.07, 0.93)]
+    width = 54 - 16 * i / (SEGMENTS - 1)
+    a, b = ends
+    shapes.append(((a[0] + a[2]*width/2, a[1] + a[3]*width/2),
+                   (a[0] - a[2]*width/2, a[1] - a[3]*width/2),
+                   (b[0] - b[2]*width/2, b[1] - b[3]*width/2),
+                   (b[0] + b[2]*width/2, b[1] + b[3]*width/2)))
   return shapes
 
 
@@ -107,21 +131,21 @@ def draw_speedometer(rect, state: SpeedometerState, now: float, font=None):
 
   def electrode(polygon, rgb, brightness, phase):
     # Multi-width low-opacity outlines simulate local bloom without a full-screen shader.
-    glow = brightness * (0.96 + 0.025 * math.sin(now * 17 + phase) + 0.015 * math.sin(now * 31 + phase))
+    glow = brightness * (0.99 + 0.006 * math.sin(now * 7 + phase) + 0.004 * math.sin(now * 13 + phase))
     edges = list(zip(polygon, polygon[1:] + polygon[:1], strict=True))
     if brightness > 0.01:
       for width, alpha in ((15, 0.012), (8, 0.03), (3, 0.10)):
         for a, b in edges:
           line(a, b, width, rgb, glow * alpha)
       for i in range(1, len(polygon) - 1):
-        rl.draw_triangle(point(polygon[0]), point(polygon[i + 1]), point(polygon[i]), color(rgb, glow * 0.44))
+        rl.draw_triangle(point(polygon[0]), point(polygon[i + 1]), point(polygon[i]), color(rgb, brightness * 0.44))
     for a, b in electrode_mesh(polygon):
-      line(a, b, 0.65, rgb, 0.025 + glow * 0.24)
+      line(a, b, 0.65, rgb, 0.025 + brightness * 0.24)
     for a, b in edges:
-      line(a, b, 1.1, rgb, 0.075 + glow * 0.64)
+      line(a, b, 1.1, rgb, 0.075 + brightness * 0.64)
     if brightness > 0.01:
       # A thin warm-white cathode edge provides depth inside the desaturated teal glass.
-      line(polygon[0], polygon[1], 0.55, CORE, glow * 0.48)
+      line(polygon[0], polygon[1], 0.55, CORE, brightness * 0.48)
 
   for i, polygon in enumerate(arc_shapes()):
     positive, negative = state.positive[i], state.negative[SEGMENTS - 1 - i]
@@ -129,11 +153,14 @@ def draw_speedometer(rect, state: SpeedometerState, now: float, font=None):
     if negative > 0.005:
       electrode(polygon, RED, negative, i * 0.4)
 
+  # Keep dense wire geometry in separate batches so subsequent digits remain visible.
+  rl.rl_draw_render_batch_active()
   text = '---' if state.speed is None else str(min(999, round(state.speed)))
   for digit, shapes in zip(text, digit_shapes(len(text)), strict=True):
     active = 'g' if digit == '-' else DIGITS[int(digit)]
     for key, polygon in shapes.items():
       electrode(polygon, TEAL, 0.95 if key in active else 0, 0)
+    rl.rl_draw_render_batch_active()
 
   def label(text, x, y, size, alpha):
     rl.draw_text_ex(font or rl.get_font_default(), text, point((x, y)), size * scale, scale, color(TEAL, alpha))
