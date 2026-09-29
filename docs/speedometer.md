@@ -7,7 +7,7 @@ Horizontal gestures and taps cannot leave the custom face. The selection stays
 until the opposite swipe (or UI process restart). The normal off-road transition
 still works, and the selection is retained when driving resumes.
 
-The custom face contains only the speed, units, arc and subdued octagonal mesh.
+The custom face contains only the speed, units, arc and subdued octagonal mesh clipped inside each electrode.
 There is no camera, path, stock HUD, bookmark icon or driver-monitoring overlay.
 Critical takeover alerts temporarily overlay it through the upstream alert renderer.
 Stock on-road rendering and gestures are unchanged when the instrument is hidden.
@@ -24,7 +24,7 @@ Stock on-road rendering and gestures are unchanged when the instrument is hidden
   Full scale is +2.0 or -3.5 m/s². These are display scales only. Each of the 18
   segments eases in over 0.16 s and out over 0.24 s (exponential time constants).
   Inactive or stale control data clears the arc immediately.
-- Custom slanted vector digits, faint ghost electrodes and a small halo need no
+- Custom beveled, slanted LCD digits, ghost electrodes and a layered Nixie halo need no
   added assets. Gentle shimmer affects decorative light, never speed legibility.
   Background is RGB (0, 0, 0). No driving/control code is changed.
 

@@ -11,12 +11,12 @@ class SpeedometerView(Widget):
   def __init__(self):
     super().__init__()
     self._state = SpeedometerState()
-    self._started = False
+    self._started_frame = None
 
   def _update_state(self):
-    if ui_state.started != self._started:
+    if ui_state.started_frame != self._started_frame:
       self._state = SpeedometerState()
-      self._started = ui_state.started
+      self._started_frame = ui_state.started_frame
     sm = ui_state.sm
 
     def fresh(service):

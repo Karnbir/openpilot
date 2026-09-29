@@ -47,7 +47,7 @@ class MiciMainLayout(Scroller):
     ])
     self._scroller.set_reset_scroll_at_show(False)
 
-    # Disable scrolling when onroad is interacting with bookmark
+    # Keep vertical instrument gestures separate from horizontal navigation/bookmarks
     self._scroller.set_scrolling_enabled(lambda: not self._car_onroad_layout.lock_horizontal_scroll)
 
     # Set callbacks

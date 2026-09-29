@@ -6,7 +6,6 @@ from openpilot.selfdrive.ui.mici.onroad.speedometer import SpeedometerView
 from openpilot.selfdrive.ui.mici.onroad.speedometer_state import swipe_target
 
 
-
 class SpeedometerOnroadView(AugmentedRoadView):
   def __init__(self, bookmark_callback=None):
     super().__init__(bookmark_callback)
