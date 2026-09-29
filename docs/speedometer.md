@@ -26,7 +26,7 @@ Stock on-road rendering and gestures are unchanged when the instrument is hidden
   Inactive or stale control data clears the arc immediately.
 - Custom beveled, slanted LCD digits, ghost electrodes and a layered Nixie halo need no
   added assets. Five broad, smoothly curved sections form a racing-inspired shoulder and horizontal
-  top rail. The bottom sweep is over three times as thick as the tip.
+  top rail. The broad bottom sweep has a flat foot, with smooth boundaries and a straight diagonal tip.
   Shimmer varies only the outer halo by at most 2%; fills, mesh and digit edges
   remain steady for legibility.
   Background is RGB (0, 0, 0). No driving/control code is changed.

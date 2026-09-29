@@ -2,7 +2,6 @@
 """Standalone Raylib preview; does not connect to the car or publish control messages."""
 import argparse
 import math
-import os
 import pyray as rl
 from openpilot.selfdrive.ui.mici.onroad.speedometer_renderer import draw_speedometer
 from openpilot.selfdrive.ui.mici.onroad.speedometer_state import SpeedometerState
@@ -16,6 +15,7 @@ def main():
   rl.set_config_flags(rl.ConfigFlags.FLAG_MSAA_4X_HINT)
   rl.init_window(1072, 480, 'Speedometer / simulated telemetry')
   rl.set_target_fps(60)
+  capture = rl.load_render_texture(1072, 480) if args.screenshot else None
   state = SpeedometerState()
   try:
     frame = 0
@@ -25,14 +25,24 @@ def main():
       speed = 22.5 if args.screenshot else (81 + 12 * math.sin(now * 0.25)) / 3.6
       state.update(speed, speed, accel, speed_valid=True, control_active=True, dt=1 / 60)
       rl.begin_drawing()
+      if capture is not None:
+        rl.begin_texture_mode(capture)
       rl.clear_background(rl.BLACK)
       draw_speedometer(rl.Rectangle(0, 0, 1072, 480), state, now)
+      if capture is not None:
+        rl.end_texture_mode()
+        rl.draw_texture_rec(capture.texture, rl.Rectangle(0, 0, 1072, -480), rl.Vector2(0, 0), rl.WHITE)
       rl.end_drawing()
       frame += 1
       if args.screenshot and frame >= 90:
-        rl.take_screenshot(os.path.relpath(args.screenshot))
+        image = rl.load_image_from_texture(capture.texture)
+        rl.image_flip_vertical(image)
+        rl.export_image(image, args.screenshot)
+        rl.unload_image(image)
         break
   finally:
+    if capture is not None:
+      rl.unload_render_texture(capture)
     rl.close_window()
 
 

@@ -83,40 +83,36 @@ def digit_shapes(count):
 
 @lru_cache(maxsize=1)
 def arc_cells():
-  # A rising cubic shoulder that becomes a horizontal rail, inspired by racing marks.
-  def curve(t):
+  # Separate swept boundaries give the ribbon a flat foot and a clean diagonal tip.
+  # Unlike offsetting a centerline, this cannot create flared or hooked end caps.
+  def curve(t, inner=False):
     u = 1 - t
-    x = u**3 * 115 + 3 * u*u*t * 258 + 3 * u*t*t * 236 + t**3 * 660
-    y = u**3 * 234 + (1 - u**3) * 62
-    dx = 3*u*u*(258-115) + 6*u*t*(236-258) + 3*t*t*(660-236)
-    dy = 3*u*u*(62-234)
-    length = math.hypot(dx, dy)
-    return x, y, -dy / length, dx / length
+    points = ((222, 272), (319, 106), (299, 102), (622, 102)) if inner else (
+      (50, 272), (236, 36), (266, 36), (668, 36))
+    return tuple(u**3 * points[0][axis] + 3*u*u*t * points[1][axis] +
+                 3*u*t*t * points[2][axis] + t**3 * points[3][axis] for axis in (0, 1))
 
-  # Equal distance cells avoid crowding at the curved shoulder.
   samples = [curve(i / 240) for i in range(241)]
   distances = [0.0]
   for a, b in zip(samples, samples[1:], strict=False):
     distances.append(distances[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
 
-  def at(distance):
+  def parameter(distance):
     for i in range(1, len(distances)):
       if distances[i] >= distance:
         blend = (distance - distances[i - 1]) / (distances[i] - distances[i - 1])
-        return curve((i - 1 + blend) / 240)
-    return samples[-1]
+        return (i - 1 + blend) / 240
+    return 1.0
 
   sections = []
   for i in range(SEGMENTS):
-    # Broad lower electrodes taper continuously into the narrower top rail.
-    # Subdivide each of the five sections so both edges follow the shoulder smoothly.
     inner, outer = [], []
+    start = i / SEGMENTS + (0.005 if i else 0)
+    end = (i + 1) / SEGMENTS - (0.005 if i < SEGMENTS - 1 else 0)
     for j in range(13):
-      fraction = (i + 0.035 + 0.93 * j / 12) / SEGMENTS
-      x, y, nx, ny = at(distances[-1] * fraction)
-      width = 148 - 104 * fraction**0.72
-      inner.append((x + nx * width / 2, y + ny * width / 2))
-      outer.append((x - nx * width / 2, y - ny * width / 2))
+      t = parameter(distances[-1] * (start + (end - start) * j / 12))
+      inner.append(curve(t, inner=True))
+      outer.append(curve(t))
     sections.append(tuple((inner[j], outer[j], outer[j + 1], inner[j + 1]) for j in range(12)))
   return sections
 
