@@ -39,10 +39,10 @@ def electrode_mesh(polygon):
   """Cache clipped octagonal lattice; no mesh spills onto the OLED black."""
   wires = []
   step, radius = 13, 6
-  for y in range(math.floor(min(p[1] for p in polygon) / step) * step,
-                 math.ceil(max(p[1] for p in polygon)), step):
-    for x in range(math.floor(min(p[0] for p in polygon) / step) * step,
-                   math.ceil(max(p[0] for p in polygon)), step):
+  for y in range(math.floor((min(p[1] for p in polygon) - radius) / step) * step,
+                 math.ceil(max(p[1] for p in polygon) + radius), step):
+    for x in range(math.floor((min(p[0] for p in polygon) - radius) / step) * step,
+                   math.ceil(max(p[0] for p in polygon) + radius), step):
       vertices = [(x + radius * math.cos(math.pi / 8 + j * math.pi / 4),
                    y + radius * math.sin(math.pi / 8 + j * math.pi / 4)) for j in range(8)]
       for a, b in zip(vertices, vertices[1:] + vertices[:1], strict=True):
@@ -82,14 +82,14 @@ def digit_shapes(count):
 
 
 @lru_cache(maxsize=1)
-def arc_shapes():
+def arc_cells():
   # A rising cubic shoulder that becomes a horizontal rail, inspired by racing marks.
   def curve(t):
     u = 1 - t
-    x = u**3 * 84 + 3 * u*u*t * 258 + 3 * u*t*t * 236 + t**3 * 660
-    y = u**3 * 260 + (1 - u**3) * 62
-    dx = 3*u*u*(258-84) + 6*u*t*(236-258) + 3*t*t*(660-236)
-    dy = 3*u*u*(62-260)
+    x = u**3 * 115 + 3 * u*u*t * 258 + 3 * u*t*t * 236 + t**3 * 660
+    y = u**3 * 234 + (1 - u**3) * 62
+    dx = 3*u*u*(258-115) + 6*u*t*(236-258) + 3*t*t*(660-236)
+    dy = 3*u*u*(62-234)
     length = math.hypot(dx, dy)
     return x, y, -dy / length, dx / length
 
@@ -106,16 +106,25 @@ def arc_shapes():
         return curve((i - 1 + blend) / 240)
     return samples[-1]
 
-  shapes = []
+  sections = []
   for i in range(SEGMENTS):
-    ends = [at(distances[-1] * (i + f) / SEGMENTS) for f in (0.07, 0.93)]
-    width = 54 - 16 * i / (SEGMENTS - 1)
-    a, b = ends
-    shapes.append(((a[0] + a[2]*width/2, a[1] + a[3]*width/2),
-                   (a[0] - a[2]*width/2, a[1] - a[3]*width/2),
-                   (b[0] - b[2]*width/2, b[1] - b[3]*width/2),
-                   (b[0] + b[2]*width/2, b[1] + b[3]*width/2)))
-  return shapes
+    # Broad lower electrodes taper continuously into the narrower top rail.
+    # Subdivide each of the five sections so both edges follow the shoulder smoothly.
+    inner, outer = [], []
+    for j in range(13):
+      fraction = (i + 0.035 + 0.93 * j / 12) / SEGMENTS
+      x, y, nx, ny = at(distances[-1] * fraction)
+      width = 148 - 104 * fraction**0.72
+      inner.append((x + nx * width / 2, y + ny * width / 2))
+      outer.append((x - nx * width / 2, y - ny * width / 2))
+    sections.append(tuple((inner[j], outer[j], outer[j + 1], inner[j + 1]) for j in range(12)))
+  return sections
+
+
+@lru_cache(maxsize=1)
+def arc_shapes():
+  return [tuple([cell[0] for cell in cells] + [cells[-1][3], cells[-1][2]] +
+                [cell[1] for cell in reversed(cells)]) for cells in arc_cells()]
 
 
 def draw_speedometer(rect, state: SpeedometerState, now: float, font=None):
@@ -129,18 +138,21 @@ def draw_speedometer(rect, state: SpeedometerState, now: float, font=None):
   def line(a, b, width, rgb, alpha):
     rl.draw_line_ex(point(a), point(b), width * scale, color(rgb, alpha))
 
-  def electrode(polygon, rgb, brightness, phase):
+  def electrode(polygon, rgb, brightness, phase, cells=None):
     # Multi-width low-opacity outlines simulate local bloom without a full-screen shader.
     glow = brightness * (0.99 + 0.006 * math.sin(now * 7 + phase) + 0.004 * math.sin(now * 13 + phase))
     edges = list(zip(polygon, polygon[1:] + polygon[:1], strict=True))
+    cells = cells or (polygon,)
     if brightness > 0.01:
       for width, alpha in ((15, 0.012), (8, 0.03), (3, 0.10)):
         for a, b in edges:
           line(a, b, width, rgb, glow * alpha)
-      for i in range(1, len(polygon) - 1):
-        rl.draw_triangle(point(polygon[0]), point(polygon[i + 1]), point(polygon[i]), color(rgb, brightness * 0.44))
-    for a, b in electrode_mesh(polygon):
-      line(a, b, 0.65, rgb, 0.025 + brightness * 0.24)
+      for cell in cells:
+        for i in range(1, len(cell) - 1):
+          rl.draw_triangle(point(cell[0]), point(cell[i + 1]), point(cell[i]), color(rgb, brightness * 0.44))
+    for cell in cells:
+      for a, b in electrode_mesh(cell):
+        line(a, b, 0.65, rgb, 0.025 + brightness * 0.24)
     for a, b in edges:
       line(a, b, 1.1, rgb, 0.075 + brightness * 0.64)
     if brightness > 0.01:
@@ -149,9 +161,9 @@ def draw_speedometer(rect, state: SpeedometerState, now: float, font=None):
 
   for i, polygon in enumerate(arc_shapes()):
     positive, negative = state.positive[i], state.negative[SEGMENTS - 1 - i]
-    electrode(polygon, TEAL, positive, i * 0.4)
+    electrode(polygon, TEAL, positive, i * 0.4, arc_cells()[i])
     if negative > 0.005:
-      electrode(polygon, RED, negative, i * 0.4)
+      electrode(polygon, RED, negative, i * 0.4, arc_cells()[i])
 
   # Keep dense wire geometry in separate batches so subsequent digits remain visible.
   rl.rl_draw_render_batch_active()

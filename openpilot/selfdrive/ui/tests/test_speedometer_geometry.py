@@ -1,5 +1,5 @@
 import unittest
-from openpilot.selfdrive.ui.mici.onroad.speedometer_renderer import clip_line, electrode_mesh, arc_shapes, digit_shapes
+from openpilot.selfdrive.ui.mici.onroad.speedometer_renderer import clip_line, electrode_mesh, arc_cells, digit_shapes
 
 
 class TestElectrodeMesh(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestElectrodeMesh(unittest.TestCase):
     self.assertIsNone(clip_line((-5, -1), (15, -1), box))
 
   def test_mesh_is_inside_all_electrodes(self):
-    polygons = list(arc_shapes()) + [p for digit in digit_shapes(3) for p in digit.values()]
+    polygons = [cell for section in arc_cells() for cell in section] + [p for digit in digit_shapes(3) for p in digit.values()]
     for polygon in polygons:
       wires = electrode_mesh(polygon)
       self.assertTrue(wires)

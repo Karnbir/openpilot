@@ -21,11 +21,12 @@ Stock on-road rendering and gestures are unchanged when the instrument is hidden
   plan/selfdrive messages and active longitudinal control. Stock ACC and manual
   braking do not produce a requested-acceleration indication here.
 - Teal fills bottom-left to top-right; soft red fills the reverse direction.
-  Full scale is +2.0 or -3.5 m/s². These are display scales only. Each of the 18
+  Full scale is +2.0 or -3.5 m/s². These are display scales only. Each of the five
   segments eases in over 0.16 s and out over 0.24 s (exponential time constants).
   Inactive or stale control data clears the arc immediately.
 - Custom beveled, slanted LCD digits, ghost electrodes and a layered Nixie halo need no
-  added assets. A racing-inspired cubic shoulder eases into a horizontal top rail.
+  added assets. Five broad, smoothly curved sections form a racing-inspired shoulder and horizontal
+  top rail. The bottom sweep is over three times as thick as the tip.
   Shimmer varies only the outer halo by at most 2%; fills, mesh and digit edges
   remain steady for legibility.
   Background is RGB (0, 0, 0). No driving/control code is changed.
