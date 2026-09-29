@@ -25,6 +25,7 @@ def main():
       speed = 22.5 if args.screenshot else (81 + 12 * math.sin(now * 0.25)) / 3.6
       state.update(speed, speed, accel, speed_valid=True, control_active=True, dt=1 / 60)
       rl.begin_drawing()
+      rl.clear_background(rl.BLACK)
       draw_speedometer(rl.Rectangle(0, 0, 1072, 480), state, now)
       rl.end_drawing()
       frame += 1
