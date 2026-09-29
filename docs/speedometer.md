@@ -49,3 +49,11 @@ package. The full UI additionally requires the normal openpilot build/submodules
 Validation performed: desktop Raylib render, Python compilation, Ruff and isolated
 telemetry/animation/swipe tests. Device touch interaction, full-process alert
 integration, OLED appearance and device frame timing require comma four testing.
+
+## Size and label timing
+
+At the top of `speedometer_renderer.py`, `DIGIT_SCALE` controls one/two-digit
+speeds and `THREE_DIGIT_SCALE` controls three-digit speeds. Increase to enlarge.
+`LABEL_HOLD_SECONDS` is 5 and `LABEL_FADE_SECONDS` is 3: labels hold for five
+seconds after opening the custom view, then smoothly fade to invisible over three
+seconds. Swiping back into the custom view restarts the timer.

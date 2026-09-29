@@ -7,6 +7,12 @@ from openpilot.selfdrive.ui.mici.onroad.speedometer_state import SEGMENTS, Speed
 TEAL = (139, 202, 195)
 RED = (193, 112, 115)
 CORE = (200, 229, 221)
+# Design controls: larger values make the digits larger.
+DIGIT_SCALE = 1.24
+THREE_DIGIT_SCALE = 1.08
+LABEL_HOLD_SECONDS = 5.0
+LABEL_FADE_SECONDS = 3.0
+
 DIGITS = ('abcdef', 'bc', 'abdeg', 'abcdg', 'bcfg', 'acdfg', 'acdefg', 'abc', 'abcdefg', 'abcdfg')
 
 
@@ -66,7 +72,7 @@ def stroke_polygon(a, b, width):
 
 @lru_cache(maxsize=4)
 def digit_shapes(count):
-  scale = 1.24 if count <= 2 else 1.08
+  scale = DIGIT_SCALE if count <= 2 else THREE_DIGIT_SCALE
   start = 645 - count * 102 * scale
   strokes = {'a': ((15, 0), (74, 0)), 'g': ((15, 62), (74, 62)), 'd': ((15, 124), (74, 124)),
              'f': ((9, 8), (9, 54)), 'b': ((80, 8), (80, 54)),
@@ -123,7 +129,7 @@ def arc_shapes():
                 [cell[1] for cell in reversed(cells)]) for cells in arc_cells()]
 
 
-def draw_speedometer(rect, state: SpeedometerState, now: float, font=None):
+def draw_speedometer(rect, state: SpeedometerState, now: float, font=None, *, visible_seconds: float = 0.0):
   rl.draw_rectangle_rec(rect, rl.BLACK)
   scale = min(rect.width / 720, rect.height / 322)
   ox, oy = rect.x + (rect.width - 720 * scale) / 2, rect.y + (rect.height - 322 * scale) / 2
@@ -173,5 +179,8 @@ def draw_speedometer(rect, state: SpeedometerState, now: float, font=None):
   def label(text, x, y, size, alpha):
     rl.draw_text_ex(font or rl.get_font_default(), text, point((x, y)), size * scale, scale, color(TEAL, alpha))
 
-  label('KM/H', 579, 294, 16, 0.68)
-  label('DESIRED ACCEL', 78, 294, 11, 0.46)
+  fade = min(max((visible_seconds - LABEL_HOLD_SECONDS) / LABEL_FADE_SECONDS, 0.0), 1.0)
+  opacity = 1.0 - fade * fade * (3.0 - 2.0 * fade)
+  if opacity > 0:
+    label('KM/H', 579, 294, 16, 0.68 * opacity)
+    label('DESIRED ACCEL', 78, 294, 11, 0.46 * opacity)

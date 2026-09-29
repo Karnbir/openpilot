@@ -12,11 +12,16 @@ class SpeedometerView(Widget):
     super().__init__()
     self._state = SpeedometerState()
     self._started_frame = None
+    self._shown_at = None
+
+  def reset_label_timer(self):
+    self._shown_at = None
 
   def _update_state(self):
     if ui_state.started_frame != self._started_frame:
       self._state = SpeedometerState()
       self._started_frame = ui_state.started_frame
+      self.reset_label_timer()
     sm = ui_state.sm
 
     def fresh(service):
@@ -29,7 +34,10 @@ class SpeedometerView(Widget):
                        speed_valid=fresh('carState'), control_active=active and fresh('carState'), dt=rl.get_frame_time())
 
   def _render(self, rect):
-    draw_speedometer(rect, self._state, rl.get_time(), gui_app.font(FontWeight.MEDIUM))
+    now = rl.get_time()
+    if self._shown_at is None:
+      self._shown_at = now
+    draw_speedometer(rect, self._state, now, gui_app.font(FontWeight.MEDIUM), visible_seconds=now - self._shown_at)
     if not ui_state.started:
       rl.draw_rectangle_rec(rect, rl.BLACK)
       rl.draw_text_ex(gui_app.font(FontWeight.MEDIUM), 'start the car to use openpilot',

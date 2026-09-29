@@ -17,6 +17,7 @@ def main():
   rl.set_target_fps(60)
   capture = rl.load_render_texture(1072, 480) if args.screenshot else None
   state = SpeedometerState()
+  shown_at = rl.get_time()
   try:
     frame = 0
     while not rl.window_should_close():
@@ -28,7 +29,7 @@ def main():
       if capture is not None:
         rl.begin_texture_mode(capture)
       rl.clear_background(rl.BLACK)
-      draw_speedometer(rl.Rectangle(0, 0, 1072, 480), state, now)
+      draw_speedometer(rl.Rectangle(0, 0, 1072, 480), state, now, visible_seconds=now - shown_at)
       if capture is not None:
         rl.end_texture_mode()
         rl.draw_texture_rec(capture.texture, rl.Rectangle(0, 0, 1072, -480), rl.Vector2(0, 0), rl.WHITE)

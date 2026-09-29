@@ -31,6 +31,8 @@ class SpeedometerOnroadView(AugmentedRoadView):
         target = swipe_target(dx, dy, self._custom)
         self._suppress_click = self._vertical_drag or self._custom or target != self._custom
         if ui_state.started:
+          if target and not self._custom:
+            self._instrument.reset_label_timer()
           self._custom = target
         self._touch_start = None
         self._vertical_drag = False
