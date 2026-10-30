@@ -2,7 +2,7 @@
 import math
 from dataclasses import dataclass, field
 
-SEGMENTS = 5
+SEGMENTS = 7
 ACCEL_SCALE = 2.0  # m/s² at full scale (display scale, not a control limit)
 BRAKE_SCALE = 3.5
 

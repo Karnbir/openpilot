@@ -25,10 +25,10 @@ Stock on-road rendering and gestures are unchanged when the instrument is hidden
   segments eases in over 0.16 s and out over 0.24 s (exponential time constants).
   Inactive or stale control data clears the arc immediately.
 - Custom beveled, slanted LCD digits, ghost electrodes and a layered Nixie halo need no
-  added assets. Five broad, smoothly curved sections form a racing-inspired shoulder and horizontal
-  top rail. The broad bottom sweep has a flat foot, with smooth boundaries and a straight diagonal tip.
-  Shimmer varies only the outer halo by at most 2%; fills, mesh and digit edges
-  remain steady for legibility.
+  added assets. Broad, smoothly curved sections form a racing-inspired shoulder and horizontal
+  top rail. The broad bottom sweep has a flat foot, with smooth boundaries and a flat vertical tip.
+  The brighter terminal-style fill varies by less than 2%, with a slightly stronger
+  halo shimmer. Mesh and digit edges remain steady for legibility.
   Background is RGB (0, 0, 0). No driving/control code is changed.
 
 ## Desktop preview
@@ -53,7 +53,14 @@ integration, OLED appearance and device frame timing require comma four testing.
 ## Size and label timing
 
 At the top of `speedometer_renderer.py`, `DIGIT_SCALE` controls one/two-digit
-speeds and `THREE_DIGIT_SCALE` controls three-digit speeds. Increase to enlarge.
+speeds and `THREE_DIGIT_SCALE` controls three-digit speeds. Increase to enlarge upward from the fixed `DIGIT_BOTTOM` baseline.
+`FILL_OPACITY` and `HALO_SHIMMER` tune the bright fill and subtle flicker.
 `LABEL_HOLD_SECONDS` is 5 and `LABEL_FADE_SECONDS` is 3: labels hold for five
 seconds after opening the custom view, then smoothly fade to invisible over three
 seconds. Swiping back into the custom view restarts the timer.
+
+Arc color uses the current near-white teal `(210, 255, 245)` as its neutral
+midpoint. Increasing acceleration saturates toward teal `(20, 255, 205)` at
++2.0 m/s²; increasing deceleration saturates toward red `(255, 35, 45)` at
+-3.5 m/s². Hue follows the smoothed signed fill, passing through neutral on
+direction changes. Peak channel brightness stays at 255. Speed digits and both labels follow the same color; the label fade timing is unchanged.
